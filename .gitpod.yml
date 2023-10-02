@@ -1,0 +1,12 @@
+image:
+  file: .devcontainer/Dockerfile
+vscode:
+  extensions:
+    - mhutchie.git-graph
+    - redhat.java
+    - redhat.fabric8-analytics
+    - vscjava.vscode-java-pack
+    - vscjava.vscode-java-debug
+    - vscjava.vscode-java-dependency
+    - vscjava.vscode-java-test
+    - vscjava.vscode-maven

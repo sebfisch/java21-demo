@@ -1,0 +1,19 @@
+{
+  "name": "java-dev",
+  "dockerComposeFile": ["docker-compose.yml"],
+  "service": "dev",
+  "workspaceFolder": "/home/me/java21-demo",
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "terminal.integrated.shell.linux": {}
+      },
+      "extensions": [
+        "vscjava.vscode-java-pack",
+        "mhutchie.git-graph",
+        "redhat.fabric8-analytics"
+      ]
+    }
+  },
+  "remoteUser": "me"
+}

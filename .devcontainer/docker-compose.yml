@@ -1,0 +1,29 @@
+version: "3"
+volumes:
+  home:
+services:
+  dev:
+    command: /bin/sh -c "while sleep 1000; do :; done"
+    build:
+      context: "."
+      # Adjust the build args to reflect your local setup
+      args:
+        HOME: /home/me
+        USER: me
+        UID: 1000
+        GROUP: me
+        GID: 1000
+    hostname: java-dev
+    environment:
+      # Adjust to reflect your own timezone
+      - TZ=Europe/Berlin
+        # The following line disables class data sharing for the JVM
+        # which leads to a warning message on some architectures.
+        # - JAVA_OPTIONS=-Xshare:off
+    volumes:
+      - home:/home
+        # Adjust directories and user to reflect above changes to build args
+      - ~/.ssh:/home/me/.ssh/
+      - ..:/home/me/java21-demo
+    working_dir: /home/me/java21-demo
+    user: me
