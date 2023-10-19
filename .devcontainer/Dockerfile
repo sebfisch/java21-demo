@@ -1,11 +1,9 @@
-FROM mcr.microsoft.com/openjdk/jdk:21-ubuntu
+FROM eclipse-temurin:21
 CMD bash --login
 
 ARG MAVEN3_VERSION=3.9.4
 
 ENV LANG en_US.UTF-8
-ENV JAVA_HOME /usr/lib/jvm/msopenjdk-21-amd64
-ENV PATH "${JAVA_HOME}/bin:${PATH}"
 
 ENV USER=me
 ENV GROUP=me
@@ -19,9 +17,21 @@ ENV MAVEN_HOME /usr/share/maven
 ENV MAVEN_CONFIG "$HOME/.m2"
 ENV MAVEN_OPTS="-XX:+TieredCompilation -XX:TieredStopAtLevel=1"
 
-RUN \
+RUN chmod a+x /opt/java/openjdk/bin/java && \
   apt-get update && \
-  apt-get install -y bsdmainutils ca-certificates curl git htop libxrender1 libxtst6 libxi6 man sudo && \
+  apt-get install -y \
+    bsdmainutils \
+    ca-certificates \
+    curl \
+    git \
+    htop \
+    libxrender1 \
+    libxtst6 \
+    libxi6 \
+    man \
+    sudo \
+    x11-apps \
+    && \
   rm -rf /var/lib/apt/lists/ && \
   addgroup --gid $GID $GROUP && \
   adduser --disabled-password --gecos '' --uid $UID --gid $GID $USER && \

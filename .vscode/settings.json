@@ -1,0 +1,3 @@
+{
+  "jdk.runConfig.arguments": "--enable-preview"
+}

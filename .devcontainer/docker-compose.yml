@@ -15,11 +15,12 @@ services:
         GID: 1000
     hostname: java-dev
     environment:
-      # Adjust to reflect your own timezone
+      # Adjust to reflect your own setup
       - TZ=Europe/Berlin
-        # The following line disables class data sharing for the JVM
-        # which leads to a warning message on some architectures.
-        # - JAVA_OPTIONS=-Xshare:off
+      - DISPLAY=host.docker.internal:0.0 # use X410 on Windows
+      # The following line disables class data sharing for the JVM
+      # which leads to a warning message on some architectures.
+      # - JAVA_OPTIONS=-Xshare:off
     volumes:
       - home:/home
         # Adjust directories and user to reflect above changes to build args
