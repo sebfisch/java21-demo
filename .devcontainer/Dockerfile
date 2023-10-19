@@ -23,8 +23,10 @@ RUN chmod a+x /opt/java/openjdk/bin/java && \
     bsdmainutils \
     ca-certificates \
     curl \
+    dbus-x11 \
     git \
     htop \
+    libgtk3-webkit2-perl \
     libxrender1 \
     libxtst6 \
     libxi6 \
@@ -40,3 +42,9 @@ RUN chmod a+x /opt/java/openjdk/bin/java && \
   curl -fsSL http://apache.osuosl.org/maven/maven-3/${MAVEN3_VERSION}/binaries/apache-maven-${MAVEN3_VERSION}-bin.tar.gz | \
   tar -xzC /usr/share/maven --strip-components=1 && \
   ln -s /usr/share/maven/bin/mvn /usr/bin/mvn
+
+RUN \
+  mkdir /usr/share/jmc && \
+  curl -fsSL https://github.com/adoptium/jmc-build/releases/download/8.3.0/org.openjdk.jmc-8.3.0-linux.gtk.x86_64.tar.gz | \
+  tar -xzC /usr/share/jmc --strip-components=1 && \
+  ln -s /usr/share/jmc/jmc /usr/bin/jmc

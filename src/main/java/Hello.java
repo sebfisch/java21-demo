@@ -1,6 +1,16 @@
-/*
- * JEP 445: Unnamed Classes and Instance Main Methods (Preview)
- * 
- * https://openjdk.org/jeps/445
- */
-void main() {}
+
+import java.time.Duration;
+import java.util.concurrent.Executors;
+import java.util.stream.IntStream;
+
+
+void main() {
+    try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
+        IntStream.range(0, 10_000).forEach(i -> {
+            executor.submit(() -> {
+                Thread.sleep(Duration.ofSeconds(1));
+                return i;
+            });
+        });
+    }
+}
