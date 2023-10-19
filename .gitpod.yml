@@ -3,4 +3,4 @@ image:
 vscode:
   extensions:
     - mhutchie.git-graph
-    - Oracle.oracle-java
+    - redhat.java
