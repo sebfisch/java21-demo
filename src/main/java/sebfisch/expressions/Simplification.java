@@ -8,19 +8,20 @@ import sebfisch.expressions.data.Num;
 import sebfisch.expressions.data.Small;
 import sebfisch.expressions.data.Sub;
 
-public class Simplification implements Transform {
+public final class Simplification {
 
-    @Override
-    public Expr apply(Expr expr) {
-        return Transform.combineAll(
-                Simplification::normalizeConst,
-                Simplification::removeSubOfNeg,
-                Simplification::removeNeutral,
-                Simplification::cancelMul
-        ).recursively().apply(expr);
+    private Simplification() {
     }
 
-    static Expr normalizeConst(Expr expr) {
+    public static final Transform TRANSFORM = expr
+            -> Transform.combineAll(
+                    Simplification::normalizeConst,
+                    Simplification::removeSubOfNeg,
+                    Simplification::removeNeutral,
+                    Simplification::cancelMul
+            ).recursively().apply(expr);
+
+    private static Expr normalizeConst(Expr expr) {
         return switch (expr) {
             // nested patterns can only be type patterns or record patterns, not case constants
             case Num(var value) when value == 0 ->
@@ -32,7 +33,7 @@ public class Simplification implements Transform {
         };
     }
 
-    static Expr removeSubOfNeg(Expr expr) {
+    private static Expr removeSubOfNeg(Expr expr) {
         return switch (expr) {
             case Sub(var l, Neg(var r)) ->
                 new Add(l, r);
@@ -41,7 +42,7 @@ public class Simplification implements Transform {
         };
     }
 
-    static Expr removeNeutral(Expr expr) {
+    private static Expr removeNeutral(Expr expr) {
         return switch (expr) {
             case Add(var l, var r) when l == Small.ZERO ->
                 r;
@@ -58,7 +59,7 @@ public class Simplification implements Transform {
         };
     }
 
-    static Expr cancelMul(Expr expr) {
+    private static Expr cancelMul(Expr expr) {
         return switch (expr) {
             case Mul e when e.left() == Small.ZERO || e.right() == Small.ZERO ->
                 Small.ZERO;
