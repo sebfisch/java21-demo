@@ -31,6 +31,7 @@ RUN chmod a+x /opt/java/openjdk/bin/java && \
     libxtst6 \
     libxi6 \
     man \
+    netcat-openbsd \
     sudo \
     x11-apps \
     && \
@@ -41,9 +42,7 @@ RUN chmod a+x /opt/java/openjdk/bin/java && \
   mkdir -p /usr/share/maven && \
   curl -fsSL http://apache.osuosl.org/maven/maven-3/${MAVEN3_VERSION}/binaries/apache-maven-${MAVEN3_VERSION}-bin.tar.gz | \
   tar -xzC /usr/share/maven --strip-components=1 && \
-  ln -s /usr/share/maven/bin/mvn /usr/bin/mvn
-
-RUN \
+  ln -s /usr/share/maven/bin/mvn /usr/bin/mvn && \
   mkdir /usr/share/jmc && \
   curl -fsSL https://github.com/adoptium/jmc-build/releases/download/8.3.0/org.openjdk.jmc-8.3.0-linux.gtk.x86_64.tar.gz | \
   tar -xzC /usr/share/jmc --strip-components=1 && \
