@@ -20,6 +20,7 @@ ENV MAVEN_OPTS="-XX:+TieredCompilation -XX:TieredStopAtLevel=1"
 RUN chmod a+x /opt/java/openjdk/bin/java && \
   apt-get update && \
   apt-get install -y \
+    bc \
     bsdmainutils \
     ca-certificates \
     curl \
@@ -32,6 +33,7 @@ RUN chmod a+x /opt/java/openjdk/bin/java && \
     libxi6 \
     man \
     netcat-openbsd \
+    sakura \
     sudo \
     x11-apps \
     && \
