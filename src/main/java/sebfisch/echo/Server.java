@@ -4,25 +4,19 @@ import java.io.BufferedReader;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.UncheckedIOException;
+import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
-public record Server(ServerSocket socket, ExecutorService executor)
-        implements Closeable {
-
-    @Override
-    public void close() throws IOException {
-        socket.close();
-        executor.shutdown();
-    }
+public record Server(ServerSocket socket, ExecutorService executor) implements Closeable {
 
     public static void main(String[] args) {
         try (Server server = new Server()) {
             server.start();
-        } catch (IOException | UncheckedIOException e) {
+        } catch (IOException e) {
             System.err.println(e.getMessage());
         }
     }
@@ -41,16 +35,23 @@ public record Server(ServerSocket socket, ExecutorService executor)
         }
     }
 
-    private void serve(Socket client) {
-        executor.submit(() -> {
+    private Future<Void> serve(Socket client) {
+        return executor.submit(() -> {
             try (BufferedReader reader
-                    = new BufferedReader(new InputStreamReader(client.getInputStream()))) {
-                reader.lines().forEach(System.out::println);
+                    = new BufferedReader(new InputStreamReader(client.getInputStream())) //
+                    ; PrintWriter writer = new PrintWriter(client.getOutputStream(), true)) {
+                reader.lines().forEach(writer::println);
             } finally {
                 client.close();
             }
 
             return null;
         });
+    }
+
+    @Override
+    public void close() throws IOException {
+        socket.close();
+        executor.shutdown();
     }
 }
