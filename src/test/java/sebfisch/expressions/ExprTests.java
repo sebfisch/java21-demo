@@ -27,4 +27,12 @@ class ExprTests {
                 EXPR."(0 + (12 + 0))"
         ).format());
     }
+
+    @Test
+    void testThatSimplifyRemovesDoubleNegWithTemplate() {
+        int neg = -13;
+        assertEquals("13", Simplification.TRANSFORM.apply(
+                EXPR."-\{neg}"
+        ).format());
+    }
 }
