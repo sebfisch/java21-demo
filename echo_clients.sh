@@ -14,15 +14,26 @@ NUM_MESSAGES=$3
 generate_message() {
     local client_num=$1
     local message_num=$2
-    echo "Client $client_num: Message $message_num"
+    echo "$(date '+%H:%M:%S.%3N') - Client $client_num: Message $message_num"
+}
+
+sleep_randomly() {
+    local min=$1
+    local max=$2
+    local range=$(echo "$max - $min" | bc -l)
+    local rand_val=$(($RANDOM % 1000))
+    local rand_float=$(echo "$rand_val/1000.0 * $range + $min" | bc -l)
+    sleep $rand_float
 }
 
 # Function to simulate a client
 simulate_client() {
     local client_num=$1
+    sleep_randomly 0 1
     for ((i=0; i<$NUM_MESSAGES; i++)); do
         generate_message $client_num $i
-    done | nc -w 1 localhost $SERVER_PORT
+        sleep_randomly 0 2
+    done | nc -w 3 localhost $SERVER_PORT > /dev/null
 }
 
 # Spawn the clients
