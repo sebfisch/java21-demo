@@ -1,6 +1,7 @@
 package sebfisch.expressions;
 
 import sebfisch.expressions.data.Add;
+import sebfisch.expressions.data.Div;
 import sebfisch.expressions.data.Expr;
 import sebfisch.expressions.data.Mul;
 import sebfisch.expressions.data.Neg;
@@ -13,13 +14,13 @@ public final class Simplification {
     private Simplification() {
     }
 
-    public static final Transform TRANSFORM = expr
-            -> Transform.combineAll(
+    public static final Transform TRANSFORM
+            = Transform.combineAll(
                     Simplification::normalizeConst,
-                    Simplification::removeDoubleNeg,
+                    Simplification::removeNeg,
                     Simplification::removeNeutral,
                     Simplification::cancelMul
-            ).recursively().apply(expr);
+            ).recursively();
 
     private static Expr normalizeConst(Expr expr) {
         return switch (expr) {
@@ -33,10 +34,12 @@ public final class Simplification {
         };
     }
 
-    private static Expr removeDoubleNeg(Expr expr) {
+    private static Expr removeNeg(Expr expr) {
         return switch (expr) {
             case Neg(Neg(var e)) ->
                 e;
+            case Add(var l, Neg(var r)) ->
+                new Sub(l, r);
             case Sub(var l, Neg(var r)) ->
                 new Add(l, r);
             default ->
@@ -64,6 +67,8 @@ public final class Simplification {
     private static Expr cancelMul(Expr expr) {
         return switch (expr) {
             case Mul e when e.left() == Small.ZERO || e.right() == Small.ZERO ->
+                Small.ZERO;
+            case Div e when e.left() == Small.ZERO ->
                 Small.ZERO;
             default ->
                 expr;
