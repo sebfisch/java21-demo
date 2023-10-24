@@ -35,9 +35,9 @@ public sealed interface Expr {
             case Num(var value) ->
                 Integer.toString(value);
             case Neg(var e) ->
-                "-%s".formatted(e);
+                "-%s".formatted(e.format());
             case Binary bin ->
-                "(%s %s %s)".formatted(bin.left(), bin.op(), bin.right());
+                "(%s %s %s)".formatted(bin.left().format(), bin.op(), bin.right().format());
         };
     }
 
