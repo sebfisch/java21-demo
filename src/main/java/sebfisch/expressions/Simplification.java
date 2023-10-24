@@ -16,7 +16,7 @@ public final class Simplification {
     public static final Transform TRANSFORM = expr
             -> Transform.combineAll(
                     Simplification::normalizeConst,
-                    Simplification::removeSubOfNeg,
+                    Simplification::removeDoubleNeg,
                     Simplification::removeNeutral,
                     Simplification::cancelMul
             ).recursively().apply(expr);
@@ -33,8 +33,10 @@ public final class Simplification {
         };
     }
 
-    private static Expr removeSubOfNeg(Expr expr) {
+    private static Expr removeDoubleNeg(Expr expr) {
         return switch (expr) {
+            case Neg(Neg(var e)) ->
+                e;
             case Sub(var l, Neg(var r)) ->
                 new Add(l, r);
             default ->
