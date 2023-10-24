@@ -3,33 +3,26 @@ package sebfisch.expressions;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 
-import sebfisch.expressions.data.Add;
-import sebfisch.expressions.data.Num;
-import sebfisch.expressions.data.Small;
-
 class ExprTests {
 
     @Test
     void testThatSimplifyRemovesLeftZero() {
-        assertEquals("1", Simplification.TRANSFORM.apply(
-                new Add(Small.ZERO, Small.ONE)
+        assertEquals("10", Simplification.TRANSFORM.apply(
+                new Parser("(0 + 10)").parseExpression()
         ).format());
     }
 
     @Test
     void testThatSimplifyRemovesRightZero() {
-        assertEquals("1", Simplification.TRANSFORM.apply(
-                new Add(Small.ONE, new Num(0))
+        assertEquals("11", Simplification.TRANSFORM.apply(
+                new Parser("(11 + 0)").parseExpression()
         ).format());
     }
 
     @Test
     void testThatSimplifyRemovesTwoZeroes() {
-        assertEquals("1", Simplification.TRANSFORM.apply(
-                new Add(
-                        new Num(0),
-                        new Add(Small.ONE, Small.ZERO)
-                )
+        assertEquals("12", Simplification.TRANSFORM.apply(
+                new Parser("(0 + (12 + 0))").parseExpression()
         ).format());
     }
 }
