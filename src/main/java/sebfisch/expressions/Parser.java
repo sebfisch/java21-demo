@@ -19,7 +19,6 @@ public record Parser(Scanner input) {
 
     public Parser {
         input.useDelimiter("\\s*(?=[-+()*/])|(?<=[-+()*/])\\s*");
-        // input.useDelimiter("(?<=\\D)(?=\\d)|(?<=\\d)(?=\\D)|\\s+");
     }
 
     public Expr parseExpression() {
