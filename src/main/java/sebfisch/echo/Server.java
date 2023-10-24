@@ -9,7 +9,6 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
 public record Server(ServerSocket socket, ExecutorService executor) implements Closeable {
 
@@ -35,8 +34,8 @@ public record Server(ServerSocket socket, ExecutorService executor) implements C
         }
     }
 
-    private Future<Void> serve(Socket client) {
-        return executor.submit(() -> {
+    private void serve(Socket client) {
+        executor.submit(() -> {
             try (BufferedReader reader
                     = new BufferedReader(new InputStreamReader(client.getInputStream())) //
                     ; PrintWriter writer = new PrintWriter(client.getOutputStream(), true)) {
