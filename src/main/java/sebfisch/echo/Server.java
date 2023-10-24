@@ -38,7 +38,8 @@ public record Server(ServerSocket socket, ExecutorService executor) implements C
         executor.submit(() -> {
             try (BufferedReader reader
                     = new BufferedReader(new InputStreamReader(client.getInputStream())) //
-                    ; PrintWriter writer = new PrintWriter(client.getOutputStream(), true)) {
+                    ; PrintWriter writer
+                    = new PrintWriter(client.getOutputStream(), true)) {
                 reader.lines().forEach(writer::println);
             } finally {
                 client.close();
