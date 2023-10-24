@@ -1,4 +1,12 @@
 {
   "editor.tabSize": 4,
-  "jdk.runConfig.vmOptions": "--enable-preview"
+  "jdk.runConfig.vmOptions": "--enable-preview",
+  "emeraldwalk.runonsave": {
+    "commands": [
+      {
+        "match": "\\.java$",
+        "cmd": "perl -i -0pe 's/(EXPR\\.)\\s+/$1/g' ${file}"
+      }
+    ]
+  }
 }

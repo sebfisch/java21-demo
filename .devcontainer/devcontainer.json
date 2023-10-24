@@ -8,7 +8,11 @@
       "settings": {
         "terminal.integrated.shell.linux": {}
       },
-      "extensions": ["mhutchie.git-graph", "Oracle.oracle-java"]
+      "extensions": [
+        "emeraldwalk.runonsave",
+        "mhutchie.git-graph",
+        "Oracle.oracle-java"
+      ]
     }
   },
   "remoteUser": "me"
