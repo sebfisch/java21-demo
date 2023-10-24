@@ -1,4 +1,3 @@
 {
-  "editor.tabSize": 4,
-  "jdk.runConfig.vmOptions": "--enable-preview"
+  "editor.tabSize": 4
 }
