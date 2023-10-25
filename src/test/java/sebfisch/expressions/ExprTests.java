@@ -32,7 +32,7 @@ class ExprTests {
 
     @ParameterizedTest
     @MethodSource("randomExpression")
-    void simplifiedHasSameResult(Expr expr) {
+    public void simplifiedHasSameResult(Expr expr) {
         assertEquals(Evaluation.eval(expr), Evaluation.eval(Simplification.TRANSFORM.apply(expr)));
     }
 }
