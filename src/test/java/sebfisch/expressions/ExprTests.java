@@ -11,7 +11,7 @@ import sebfisch.expressions.data.Expr;
 class ExprTests {
 
     static Stream<Expr> randomExpression() {
-        return Stream.generate(new Generator()::randomExpression).limit(100);
+        return Stream.generate(new Generator()::randomExpression).limit(1000);
     }
 
     @ParameterizedTest
@@ -28,5 +28,11 @@ class ExprTests {
     @MethodSource("randomExpressionString")
     void formattedIsSameAsParsed(String string) {
         assertEquals(string, new Parser(string).parseExpression().format());
+    }
+
+    @ParameterizedTest
+    @MethodSource("randomExpression")
+    void simplifiedHasSameResult(Expr expr) {
+        assertEquals(Evaluation.eval(expr), Evaluation.eval(Simplification.TRANSFORM.apply(expr)));
     }
 }
