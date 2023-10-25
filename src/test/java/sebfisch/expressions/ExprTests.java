@@ -1,28 +1,32 @@
 package sebfisch.expressions;
 
+import java.util.stream.Stream;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
+
+import sebfisch.expressions.data.Expr;
 
 class ExprTests {
 
-    @Test
-    void testThatSimplifyRemovesLeftZero() {
-        assertEquals("10", Simplification.TRANSFORM.apply(
-                new Parser("(0 + 10)").parseExpression()
-        ).format());
+    static Stream<Expr> randomExpression() {
+        return Stream.generate(new Generator()::randomExpression).limit(100);
     }
 
-    @Test
-    void testThatSimplifyRemovesRightZero() {
-        assertEquals("11", Simplification.TRANSFORM.apply(
-                new Parser("(11 + 0)").parseExpression()
-        ).format());
+    @ParameterizedTest
+    @MethodSource("randomExpression")
+    void parsedIsSameAsFormatted(Expr expr) {
+        assertEquals(expr, new Parser(expr.format()).parseExpression());
     }
 
-    @Test
-    void testThatSimplifyRemovesTwoZeroes() {
-        assertEquals("12", Simplification.TRANSFORM.apply(
-                new Parser("(0 + (12 + 0))").parseExpression()
-        ).format());
+    static Stream<String> randomExpressionString() {
+        return randomExpression().map(Expr::format);
+    }
+
+    @ParameterizedTest
+    @MethodSource("randomExpressionString")
+    void formattedIsSameAsParsed(String string) {
+        assertEquals(string, new Parser(string).parseExpression().format());
     }
 }
