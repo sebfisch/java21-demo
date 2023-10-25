@@ -11,7 +11,7 @@ public record RecentlyAccessed<T>(int capacity, SequencedCollection<T> elements)
 
     public void add(T elem) {
         elements.addLast(elem);
-        if (capacity < elements.size()) {
+        while (capacity < elements.size()) {
             elements.removeFirst();
         }
     }
