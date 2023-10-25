@@ -10,23 +10,23 @@ import sebfisch.expressions.data.Expr;
 
 class ExprTests {
 
-    static Stream<Expr> randomExpression() {
+    public static Stream<Expr> randomExpression() {
         return Stream.generate(new Generator()::randomExpression).limit(1000);
     }
 
     @ParameterizedTest
     @MethodSource("randomExpression")
-    void parsedIsSameAsFormatted(Expr expr) {
+    public void parsedIsSameAsFormatted(Expr expr) {
         assertEquals(expr, new Parser(expr.format()).parseExpression());
     }
 
-    static Stream<String> randomExpressionString() {
+    public static Stream<String> randomExpressionString() {
         return randomExpression().map(Expr::format);
     }
 
     @ParameterizedTest
     @MethodSource("randomExpressionString")
-    void formattedIsSameAsParsed(String string) {
+    public void formattedIsSameAsParsed(String string) {
         assertEquals(string, new Parser(string).parseExpression().format());
     }
 }
