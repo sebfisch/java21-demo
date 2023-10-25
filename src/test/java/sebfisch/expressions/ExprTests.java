@@ -1,38 +1,32 @@
 package sebfisch.expressions;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import org.junit.jupiter.api.Test;
+import java.util.stream.Stream;
 
-import static sebfisch.expressions.Parser.EXPR;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
+
+import sebfisch.expressions.data.Expr;
 
 class ExprTests {
 
-    @Test
-    void testThatSimplifyRemovesLeftZero() {
-        assertEquals("10", Simplification.TRANSFORM.apply(
-                EXPR."(0 + 10)"
-        ).format());
+    static Stream<Expr> randomExpression() {
+        return Stream.generate(new Generator()::randomExpression).limit(1000);
     }
 
-    @Test
-    void testThatSimplifyRemovesRightZero() {
-        assertEquals("11", Simplification.TRANSFORM.apply(
-                EXPR."(11 + 0)"
-        ).format());
+    @ParameterizedTest
+    @MethodSource("randomExpression")
+    void parsedIsSameAsFormatted(Expr expr) {
+        assertEquals(expr, new Parser(expr.format()).parseExpression());
     }
 
-    @Test
-    void testThatSimplifyRemovesTwoZeroes() {
-        assertEquals("12", Simplification.TRANSFORM.apply(
-                EXPR."(0 + (12 + 0))"
-        ).format());
+    static Stream<String> randomExpressionString() {
+        return randomExpression().map(Expr::format);
     }
 
-    @Test
-    void testThatSimplifyRemovesDoubleNegWithTemplate() {
-        int neg = -13;
-        assertEquals("13", Simplification.TRANSFORM.apply(
-                EXPR."-\{neg}"
-        ).format());
+    @ParameterizedTest
+    @MethodSource("randomExpressionString")
+    void formattedIsSameAsParsed(String string) {
+        assertEquals(string, new Parser(string).parseExpression().format());
     }
 }

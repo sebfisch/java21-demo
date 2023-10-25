@@ -10,22 +10,45 @@ import java.net.Socket;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public record Server(ServerSocket socket, ExecutorService executor) implements Closeable {
+import sebfisch.util.RecentlyAccessed;
+
+public record Server(
+        ServerSocket socket, ExecutorService executor, RecentlyAccessed<String> recentMessages)
+        implements Closeable {
 
     public static void main(String[] args) {
         try (Server server = new Server()) {
+            server.handleInput();
             server.start();
         } catch (IOException e) {
             System.err.println(e.getMessage());
         }
     }
 
-    public Server  {
+    public Server   {
         System.out.println("listening on port %s".formatted(socket.getLocalPort()));
     }
 
     private Server() throws IOException {
-        this(new ServerSocket(0), Executors.newVirtualThreadPerTaskExecutor());
+        this(new ServerSocket(0),
+                Executors.newVirtualThreadPerTaskExecutor(),
+                new RecentlyAccessed(20)
+        );
+    }
+
+    private void handleInput() {
+        executor.submit(() -> {
+            try (BufferedReader reader
+                    = new BufferedReader(new InputStreamReader(System.in))//
+                    ; PrintWriter writer
+                    = new PrintWriter(System.out, true)) {
+                reader.lines().forEach(ignored -> {
+                    System.out.println("recent messages:");
+                    recentMessages.elements().forEach(writer::println);
+                });
+            }
+            return null;
+        });
     }
 
     private void start() throws IOException {
@@ -40,7 +63,10 @@ public record Server(ServerSocket socket, ExecutorService executor) implements C
                     = new BufferedReader(new InputStreamReader(client.getInputStream())) //
                     ; PrintWriter writer
                     = new PrintWriter(client.getOutputStream(), true)) {
-                reader.lines().forEach(writer::println);
+                reader.lines().forEach(msg -> {
+                    recentMessages.add(msg);
+                    writer.println(msg);
+                });
             } finally {
                 client.close();
             }

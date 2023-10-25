@@ -17,8 +17,15 @@ public record Generator(SplittableRandom random) {
     private static final int NUM_LIMIT = 100;
 
     public static void main(String[] args) {
-        final SplittableRandom random = new SplittableRandom();
-        System.out.println(new Generator(random).randomExpr(random.nextInt(SIZE_LIMIT)).format());
+        System.out.println(new Generator().randomExpression().format());
+    }
+
+    public Generator() {
+        this(new SplittableRandom());
+    }
+
+    public Expr randomExpression() {
+        return randomExpr(random.nextInt(SIZE_LIMIT));
     }
 
     private Expr randomExpr(int size) {

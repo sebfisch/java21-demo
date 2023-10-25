@@ -15,7 +15,7 @@ public interface Transform extends UnaryOperator<Expr> {
     }
 
     default Transform combine(Transform that) {
-        return e -> that.compose(this).apply(e); // reversed order
+        return e -> that.compose(this).apply(e); // this before that
     }
 
     default Transform recursively() {
