@@ -8,15 +8,15 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.SplittableRandom;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
 
 public record Clients(
         String host, int port, int clientCount, int messageCount,
-        ExecutorService executor) implements Closeable {
+        ExecutorService executor, SplittableRandom random) implements Closeable {
 
     public static void main(String[] args) {
         try (Clients clients = new Clients(args)) {
@@ -26,17 +26,22 @@ public record Clients(
         }
     }
 
-    private static void sleepRandomly(int min, int max) throws InterruptedException {
-        Thread.sleep(ThreadLocalRandom.current().nextInt(min, max));
+    private static void sleepRandomly(SplittableRandom rnd, int origin, int bound)
+            throws InterruptedException {
+        Thread.sleep(rnd.nextInt(origin, bound));
     }
 
     Clients(String[] args) {
         this(args[0],
-                Integer.parseInt(args[1]), Integer.parseInt(args[2]), Integer.parseInt(args[3]));
+                Integer.parseInt(args[1]), Integer.parseInt(args[2]), Integer.parseInt(args[3])
+        );
     }
 
     Clients(String host, int port, int clientCount, int messageCount) {
-        this(host, port, clientCount, messageCount, Executors.newVirtualThreadPerTaskExecutor());
+        this(host, port, clientCount, messageCount,
+                Executors.newVirtualThreadPerTaskExecutor(),
+                new SplittableRandom()
+        );
     }
 
     private void start() throws IOException {
@@ -55,7 +60,8 @@ public record Clients(
                 = new PrintWriter(socket.getOutputStream(), true) //
                 ; BufferedReader reader
                 = new BufferedReader(new InputStreamReader(socket.getInputStream()))) {
-            sleepRandomly(0, 1000);
+            final SplittableRandom rnd = random.split();
+            sleepRandomly(rnd, 0, 1000);
             for (int messageNum = 0; messageNum < messageCount; messageNum++) {
                 final String message = "%s - Client %d: Message %d".formatted(
                         LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss.SSS")),
@@ -64,7 +70,7 @@ public record Clients(
                 );
                 writer.println(message);
                 assert message.equals(reader.readLine());
-                sleepRandomly(0, 2000);
+                sleepRandomly(rnd, 0, 2000);
             }
         }
     }
