@@ -17,7 +17,6 @@ public final class Request {
     public static Response send(final String command) {
         try {
             if (!LOCK.tryLock(1, TimeUnit.SECONDS)) {
-                System.out.println("timeout");
                 return new Response.Timeout();
             }
         } catch (InterruptedException e) {

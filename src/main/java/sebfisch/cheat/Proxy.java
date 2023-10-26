@@ -58,14 +58,12 @@ public record Proxy(
     }
 
     private void serve(Socket client) {
-        System.out.println("connection from port %d".formatted(client.getPort()));
         executor.submit(() -> {
-            System.out.println("serving connection from port %d".formatted(client.getPort()));
             try (BufferedReader reader
                     = new BufferedReader(new InputStreamReader(client.getInputStream())) //
                     ; PrintWriter writer
                     = new PrintWriter(client.getOutputStream(), true)) {
-                writer.println(cache.computeIfAbsent(reader.readLine(), this::requestCommandInfo));
+                writer.println(commandInfo(reader.readLine()));
             } finally {
                 client.close();
             }
@@ -74,12 +72,16 @@ public record Proxy(
         });
     }
 
+    private String commandInfo(String command) {
+        return cache.computeIfAbsent(command, this::requestCommandInfo);
+    }
+
     private String requestCommandInfo(String command) {
         return switch (Request.send(command)) {
             case Response.Ok(var body) ->
                 body;
             case Response.Timeout() ->
-                requestCommandInfo(command); // try again
+                commandInfo(command); // try again, potentially from cache
             case Response.Error e ->
                 e.message();
         };

@@ -11,7 +11,12 @@ public record MostRecentlyUsed<K, V>(
     }
 
     public V computeIfAbsent(K key, Function<K, V> function) {
-        final V result = entries.computeIfAbsent(key, function);
+        // do not use entries.computeIfAbsent, to avoid recursive update
+        V result = entries.get(key);
+        if (result == null) {
+            result = function.apply(key);
+            entries.put(key, result);
+        }
         if (!keys.elements().contains(key)) {
             keys.add(key).forEach(entries::remove);
         }
