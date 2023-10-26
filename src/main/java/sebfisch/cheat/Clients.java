@@ -65,6 +65,7 @@ public record Clients(String host, int port, int clientCount,
 
     @Override
     public void close() {
+        System.out.println("shutting down");
         executor.shutdown();
         try {
             executor.awaitTermination(10, TimeUnit.MINUTES);
