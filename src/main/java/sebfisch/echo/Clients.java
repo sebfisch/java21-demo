@@ -26,11 +26,6 @@ public record Clients(
         }
     }
 
-    private static void sleepRandomly(SplittableRandom rnd, int origin, int bound)
-            throws InterruptedException {
-        Thread.sleep(rnd.nextInt(origin, bound));
-    }
-
     Clients(String[] args) {
         this(args[0],
                 Integer.parseInt(args[1]), Integer.parseInt(args[2]), Integer.parseInt(args[3])
@@ -61,7 +56,7 @@ public record Clients(
                 ; BufferedReader reader
                 = new BufferedReader(new InputStreamReader(socket.getInputStream()))) {
             final SplittableRandom rnd = random.split();
-            sleepRandomly(rnd, 0, 1000);
+            TimeUnit.SECONDS.sleep(rnd.nextInt(0, 1));
             for (int messageNum = 0; messageNum < messageCount; messageNum++) {
                 final String message = "%s - Client %d: Message %d".formatted(
                         LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss.SSS")),
@@ -70,7 +65,7 @@ public record Clients(
                 );
                 writer.println(message);
                 assert message.equals(reader.readLine());
-                sleepRandomly(rnd, 0, 2000);
+                TimeUnit.SECONDS.sleep(rnd.nextInt(0, 2));
             }
         }
     }
