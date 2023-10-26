@@ -60,7 +60,7 @@ public record Clients(String host, int port, int clientCount,
                 ? frequentCommands
                 : lessFrequentCommands;
 
-        return commandList.get(random.nextInt(commandList.size()));
+        return commandList.get(rnd.nextInt(commandList.size()));
     }
 
     @Override
