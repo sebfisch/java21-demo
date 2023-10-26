@@ -47,16 +47,16 @@ public record Clients(String host, int port, int clientCount,
                 = new BufferedReader(new InputStreamReader(socket.getInputStream())) //
                 ; PrintWriter writer
                 = new PrintWriter(socket.getOutputStream(), true)) {
-            writer.println(randomCommand());
+            writer.println(randomCommand(random.split()));
             System.out.println(reader.readLine()); // just print first line of output
         } catch (IOException e) {
             System.err.println(e.getMessage());
         }
     }
 
-    private String randomCommand() {
+    private String randomCommand(SplittableRandom rnd) {
         final List<String> commandList
-                = random.nextInt(10) < 9
+                = rnd.nextInt(10) < 8
                 ? frequentCommands
                 : lessFrequentCommands;
 
