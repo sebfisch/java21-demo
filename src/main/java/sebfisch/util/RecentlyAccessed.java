@@ -16,7 +16,6 @@ public record RecentlyAccessed<T>(int capacity, SequencedCollection<T> elements)
         while (capacity < elements.size()) {
             removed.addLast(elements.removeFirst());
         }
-        System.out.println(removed);
         return removed;
     }
 }

@@ -58,7 +58,9 @@ public record Proxy(
     }
 
     private void serve(Socket client) {
+        System.out.println("connection from port %d".formatted(client.getPort()));
         executor.submit(() -> {
+            System.out.println("serving connection from port %d".formatted(client.getPort()));
             try (BufferedReader reader
                     = new BufferedReader(new InputStreamReader(client.getInputStream())) //
                     ; PrintWriter writer
