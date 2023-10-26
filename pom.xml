@@ -24,7 +24,7 @@
           <release>21</release>
           <compilerArgs>
             <arg>--enable-preview</arg>
-            <arg>-Xlint:unchecked</arg>
+            <arg>-Xlint:all,-preview</arg>
           </compilerArgs>
         </configuration>
       </plugin>
