@@ -9,6 +9,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 public record Proxy(
         ServerSocket socket, ExecutorService executor)
@@ -17,7 +18,7 @@ public record Proxy(
     public static void main(String[] args) {
         try (Proxy server = new Proxy()) {
             server.start();
-        } catch (IOException e) {
+        } catch (IOException | InterruptedException e) {
             System.err.println(e.getMessage());
         }
     }
@@ -32,9 +33,10 @@ public record Proxy(
         );
     }
 
-    private void start() throws IOException {
+    private void start() throws IOException, InterruptedException {
         while (!socket.isClosed()) {
             serve(socket.accept());
+            TimeUnit.SECONDS.sleep(1);
         }
     }
 
@@ -44,20 +46,22 @@ public record Proxy(
                     = new BufferedReader(new InputStreamReader(client.getInputStream())) //
                     ; PrintWriter writer
                     = new PrintWriter(client.getOutputStream(), true)) {
-                reader.lines().forEach(command -> {
-                    switch (Request.send(command)) {
-                        case Response.Ok(var body) ->
-                            writer.println(body);
-                        case Response.Error e ->
-                            writer.println(e.message());
-                    }
-                });
+                reader.lines().forEach(cmd -> writer.println(commandInfo(cmd)));
             } finally {
                 client.close();
             }
 
             return null;
         });
+    }
+
+    private String commandInfo(String command) {
+        return switch (Request.send(command)) {
+            case Response.Ok(var body) ->
+                body;
+            case Response.Error e ->
+                e.message();
+        };
     }
 
     @Override

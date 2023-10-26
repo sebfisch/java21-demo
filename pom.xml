@@ -22,6 +22,7 @@
         <version>3.11.0</version>
 		<configuration>
           <release>21</release>
+          <compilerArgument>-Xlint:unchecked</compilerArgument>
         </configuration>
       </plugin>
       <plugin>

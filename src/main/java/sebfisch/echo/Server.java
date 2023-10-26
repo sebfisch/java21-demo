@@ -32,7 +32,7 @@ public record Server(
     private Server() throws IOException {
         this(new ServerSocket(0),
                 Executors.newVirtualThreadPerTaskExecutor(),
-                new RecentlyAccessed(20)
+                new RecentlyAccessed<>(20)
         );
     }
 

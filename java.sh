@@ -1,3 +1,3 @@
 #!/bin/bash
 
-java -cp target/classes $1
+java -cp target/classes $*
