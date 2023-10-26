@@ -1,5 +1,6 @@
 package sebfisch.util;
 
+import java.util.LinkedList;
 import java.util.SequencedCollection;
 import java.util.concurrent.ConcurrentLinkedDeque;
 
@@ -9,10 +10,13 @@ public record RecentlyAccessed<T>(int capacity, SequencedCollection<T> elements)
         this(capacity, new ConcurrentLinkedDeque<>());
     }
 
-    public void add(T elem) {
+    public SequencedCollection<T> add(T elem) {
         elements.addLast(elem);
+        SequencedCollection<T> removed = new LinkedList<>();
         while (capacity < elements.size()) {
-            elements.removeFirst();
+            removed.addLast(elements.removeFirst());
         }
+        System.out.println(removed);
+        return removed;
     }
 }

@@ -1,22 +1,20 @@
 package sebfisch.util;
 
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 
-public record MostRecentlyUsed<K, V>(int capacity, HashMap<K, V> entries) {
+public record MostRecentlyUsed<K, V>(
+        int capacity, RecentlyAccessed<K> keys, ConcurrentHashMap<K, V> entries) {
 
     public MostRecentlyUsed(int capacity) {
-        this(capacity, new LinkedHashMap<>(capacity + 1, 1, true) {
-            @Override
-            protected boolean removeEldestEntry(Map.Entry<K, V> entry) {
-                return size() > capacity;
-            }
-        });
+        this(capacity, new RecentlyAccessed<>(capacity), new ConcurrentHashMap<>(capacity, 1));
     }
 
-    public synchronized V computeIfAbsent(K key, Function<K, V> function) {
-        return entries.computeIfAbsent(key, function);
+    public V computeIfAbsent(K key, Function<K, V> function) {
+        final V result = entries.computeIfAbsent(key, function);
+        if (!keys.elements().contains(key)) {
+            keys.add(key).forEach(entries::remove);
+        }
+        return result;
     }
 }
