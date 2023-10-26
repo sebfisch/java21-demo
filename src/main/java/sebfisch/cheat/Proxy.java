@@ -73,7 +73,6 @@ public record Proxy(
     }
 
     private String commandInfo(String command) {
-        System.out.println("requesting info on %s".formatted(command));
         return switch (Request.send(command)) {
             case Response.Ok(var body) ->
                 body;
