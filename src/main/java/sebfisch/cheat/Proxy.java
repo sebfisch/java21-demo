@@ -9,7 +9,6 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 public record Proxy(
         ServerSocket socket, ExecutorService executor)
@@ -36,7 +35,6 @@ public record Proxy(
     private void start() throws IOException, InterruptedException {
         while (!socket.isClosed()) {
             serve(socket.accept());
-            TimeUnit.SECONDS.sleep(1);
         }
     }
 
