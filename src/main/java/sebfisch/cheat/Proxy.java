@@ -65,7 +65,7 @@ public record Proxy(
                     = new BufferedReader(new InputStreamReader(client.getInputStream())) //
                     ; PrintWriter writer
                     = new PrintWriter(client.getOutputStream(), true)) {
-                writer.println(cache.computeIfAbsent(reader.readLine(), this::commandInfo));
+                writer.println(cache.computeIfAbsent(reader.readLine(), this::requestCommandInfo));
             } finally {
                 client.close();
             }
@@ -74,10 +74,12 @@ public record Proxy(
         });
     }
 
-    private String commandInfo(String command) {
+    private String requestCommandInfo(String command) {
         return switch (Request.send(command)) {
             case Response.Ok(var body) ->
                 body;
+            case Response.Timeout() ->
+                requestCommandInfo(command); // try again
             case Response.Error e ->
                 e.message();
         };
