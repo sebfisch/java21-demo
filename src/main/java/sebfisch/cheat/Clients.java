@@ -48,7 +48,7 @@ public record Clients(String host, int port, int clientCount,
                 ; PrintWriter writer
                 = new PrintWriter(socket.getOutputStream(), true)) {
             writer.println(randomCommand());
-            reader.lines().forEach(System.out::println);
+            System.out.println(reader.readLine()); // just print first line of output
         } catch (IOException e) {
             System.err.println(e.getMessage());
         }
@@ -56,7 +56,7 @@ public record Clients(String host, int port, int clientCount,
 
     private String randomCommand() {
         final List<String> commandList
-                = random.nextInt(10) < 8
+                = random.nextInt(10) < 9
                 ? frequentCommands
                 : lessFrequentCommands;
 

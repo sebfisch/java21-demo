@@ -11,26 +11,45 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+import sebfisch.util.MostRecentlyUsed;
+
 public record Proxy(
-        ServerSocket socket, ExecutorService executor)
+        ServerSocket socket, ExecutorService executor, MostRecentlyUsed<String, String> cache)
         implements Closeable {
 
     public static void main(String[] args) {
         try (Proxy server = new Proxy()) {
+            server.handleInput();
             server.start();
         } catch (IOException | InterruptedException e) {
             System.err.println(e.getMessage());
         }
     }
 
-    public Proxy  {
+    public Proxy   {
         System.out.println("listening on port %s".formatted(socket.getLocalPort()));
     }
 
     private Proxy() throws IOException {
         this(new ServerSocket(0),
-                Executors.newVirtualThreadPerTaskExecutor()
+                Executors.newVirtualThreadPerTaskExecutor(),
+                new MostRecentlyUsed<>(40)
         );
+    }
+
+    private void handleInput() {
+        executor.submit(() -> {
+            try (BufferedReader reader
+                    = new BufferedReader(new InputStreamReader(System.in))//
+                    ; PrintWriter writer
+                    = new PrintWriter(System.out, true)) {
+                reader.lines().forEach(ignored -> {
+                    System.out.println("%d recent commands:".formatted(cache.entries().size()));
+                    cache.entries().keySet().forEach(writer::println);
+                });
+            }
+            return null;
+        });
     }
 
     private void start() throws IOException, InterruptedException {
@@ -46,7 +65,7 @@ public record Proxy(
                     = new BufferedReader(new InputStreamReader(client.getInputStream())) //
                     ; PrintWriter writer
                     = new PrintWriter(client.getOutputStream(), true)) {
-                writer.println(commandInfo(reader.readLine())); // only read a single line
+                writer.println(cache.computeIfAbsent(reader.readLine(), this::commandInfo));
             } finally {
                 client.close();
             }
@@ -56,6 +75,7 @@ public record Proxy(
     }
 
     private String commandInfo(String command) {
+        System.out.println("requesting info on %s".formatted(command));
         return switch (Request.send(command)) {
             case Response.Ok(var body) ->
                 body;
