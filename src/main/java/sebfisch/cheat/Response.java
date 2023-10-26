@@ -6,6 +6,9 @@ public sealed interface Response {
 
     }
 
+    public record Timeout() implements Response {
+    }
+
     public sealed interface Error extends Response permits CommunicationError, HttpError {
 
         default String message() {

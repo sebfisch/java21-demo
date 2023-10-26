@@ -9,7 +9,6 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 public record Proxy(
         ServerSocket socket, ExecutorService executor)
@@ -36,7 +35,6 @@ public record Proxy(
     private void start() throws IOException, InterruptedException {
         while (!socket.isClosed()) {
             serve(socket.accept());
-            TimeUnit.SECONDS.sleep(1);
         }
     }
 
@@ -46,7 +44,7 @@ public record Proxy(
                     = new BufferedReader(new InputStreamReader(client.getInputStream())) //
                     ; PrintWriter writer
                     = new PrintWriter(client.getOutputStream(), true)) {
-                writer.println(commandInfo(reader.readLine())); // only read a single line
+                writer.println(requestCommandInfo(reader.readLine())); // only read a single line
             } finally {
                 client.close();
             }
@@ -55,10 +53,12 @@ public record Proxy(
         });
     }
 
-    private String commandInfo(String command) {
+    private String requestCommandInfo(String command) {
         return switch (Request.send(command)) {
             case Response.Ok(var body) ->
                 body;
+            case Response.Timeout() ->
+                requestCommandInfo(command); // try again
             case Response.Error e ->
                 e.message();
         };
