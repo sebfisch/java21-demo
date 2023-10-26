@@ -6,7 +6,7 @@ import java.util.concurrent.ConcurrentLinkedDeque;
 public record RecentlyAccessed<T>(int capacity, SequencedCollection<T> elements) {
 
     public RecentlyAccessed(int capacity) {
-        this(capacity, new ConcurrentLinkedDeque());
+        this(capacity, new ConcurrentLinkedDeque<>());
     }
 
     public void add(T elem) {

@@ -22,6 +22,9 @@
         <version>3.11.0</version>
 		<configuration>
           <release>21</release>
+          <compilerArgs>
+            <arg>-Xlint:all</arg>
+          </compilerArgs>
         </configuration>
       </plugin>
       <plugin>
