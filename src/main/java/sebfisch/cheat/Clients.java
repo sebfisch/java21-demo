@@ -7,7 +7,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.List;
-import java.util.SplittableRandom;
+import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -15,7 +15,7 @@ import java.util.stream.IntStream;
 
 public record Clients(String host, int port, int clientCount,
         List<String> frequentCommands, List<String> lessFrequentCommands,
-        ExecutorService executor, SplittableRandom random)
+        ExecutorService executor)
         implements Closeable {
 
     public static void main(String[] args) {
@@ -33,28 +33,28 @@ public record Clients(String host, int port, int clientCount,
     private Clients(String host, int port, int clientCount) throws IOException {
         this(host, port, clientCount,
                 UnixCommands.readFrequent(), UnixCommands.readLessFrequent(),
-                Executors.newVirtualThreadPerTaskExecutor(), new SplittableRandom());
+                Executors.newVirtualThreadPerTaskExecutor());
     }
 
     private void start() throws IOException {
-        IntStream.range(0, clientCount).forEach(unused -> executor.submit(this::runClient));
+        IntStream.range(0, clientCount).forEach(num -> executor.submit(() -> runClient(num)));
     }
 
-    public void runClient() {
+    public void runClient(int clientNum) {
         try (Socket socket
                 = new Socket(host, port) //
                 ; BufferedReader reader
                 = new BufferedReader(new InputStreamReader(socket.getInputStream())) //
                 ; PrintWriter writer
                 = new PrintWriter(socket.getOutputStream(), true)) {
-            writer.println(randomCommand(random.split()));
+            writer.println(randomCommand(new Random(clientNum)));
             reader.lines().forEach(System.out::println);
         } catch (IOException e) {
             System.err.println(e.getMessage());
         }
     }
 
-    private String randomCommand(SplittableRandom rnd) {
+    private String randomCommand(Random rnd) {
         final List<String> commandList
                 = rnd.nextInt(10) < 8
                 ? frequentCommands
