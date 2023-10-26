@@ -46,7 +46,7 @@ public record Proxy(
                     = new BufferedReader(new InputStreamReader(client.getInputStream())) //
                     ; PrintWriter writer
                     = new PrintWriter(client.getOutputStream(), true)) {
-                reader.lines().forEach(cmd -> writer.println(commandInfo(cmd)));
+                writer.println(commandInfo(reader.readLine())); // only read a single line
             } finally {
                 client.close();
             }
