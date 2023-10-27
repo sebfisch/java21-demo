@@ -1,5 +1,8 @@
 package sebfisch.expressions.data;
 
+import java.util.function.Consumer;
+import java.util.stream.Stream;
+
 public sealed interface Expr {
 
     public sealed interface Const extends Expr permits Small, Num {
@@ -41,4 +44,22 @@ public sealed interface Expr {
         };
     }
 
+    default Stream<Expr> included() {
+        return Stream.of(this).mapMulti(Expr::forEachIncluded);
+    }
+
+    default void forEachIncluded(final Consumer<Expr> action) {
+        switch (this) {
+            case Unary self -> {
+                self.nested().forEachIncluded(action);
+            }
+            case Binary self -> {
+                self.right().forEachIncluded(action);
+                self.left().forEachIncluded(action);
+            }
+            default -> {
+            }
+        }
+        action.accept(this);
+    }
 }

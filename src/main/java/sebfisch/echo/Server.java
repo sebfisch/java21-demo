@@ -42,7 +42,7 @@ public record Server(
                     = new BufferedReader(new InputStreamReader(System.in))//
                     ; PrintWriter writer
                     = new PrintWriter(System.out, true)) {
-                reader.lines().forEach(ignored -> {
+                reader.lines().forEach(unused -> {
                     System.out.println("recent messages:");
                     recentMessages.elements().forEach(writer::println);
                 });
