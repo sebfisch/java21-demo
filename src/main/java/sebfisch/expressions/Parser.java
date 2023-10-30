@@ -24,6 +24,11 @@ public record Parser(Scanner input) {
 
     public Parser {
         input.useDelimiter("\\s*(?=[-+()*/])|(?<=[-+()*/])\\s*");
+        // By using both lookahead and lookbehind, 
+        // this regular expression will split on the boundary 
+        // where a number is followed by or precedes an operator or parenthesis, 
+        // ensuring multi-digit numbers are treated as a single token. 
+        // This also makes whitespace optional and allows it to be skipped.
     }
 
     public Expr parseExpression() {
