@@ -3,14 +3,6 @@ package sebfisch.expressions;
 import java.util.Scanner;
 import java.util.function.BinaryOperator;
 
-import sebfisch.expressions.data.Add;
-import sebfisch.expressions.data.Div;
-import sebfisch.expressions.data.Expr;
-import sebfisch.expressions.data.Mul;
-import sebfisch.expressions.data.Neg;
-import sebfisch.expressions.data.Num;
-import sebfisch.expressions.data.Sub;
-
 public record Parser(Scanner input) {
 
     public Parser(String input) {
@@ -35,11 +27,11 @@ public record Parser(Scanner input) {
 
     private Expr parseExpr() {
         if (input.hasNextInt()) {
-            return new Num(input.nextInt());
+            return new Expr.Num(input.nextInt());
         }
         if (input.hasNext("-")) {
             input.next(); // consume "-"
-            return new Neg(parseExpr());
+            return new Expr.Neg(parseExpr());
         }
         if (input.hasNext("\\(")) {
             input.next(); // consume "("
@@ -55,13 +47,13 @@ public record Parser(Scanner input) {
     private BinaryOperator<Expr> parseOp() {
         return switch (input.next()) {
             case "+" ->
-                Add::new;
+                Expr.Add::new;
             case "-" ->
-                Sub::new;
+                Expr.Sub::new;
             case "*" ->
-                Mul::new;
+                Expr.Mul::new;
             case "/" ->
-                Div::new;
+                Expr.Div::new;
             default ->
                 throw parseError();
         };

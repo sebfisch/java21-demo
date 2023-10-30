@@ -3,14 +3,6 @@ package sebfisch.expressions;
 import java.util.SplittableRandom;
 import java.util.function.BinaryOperator;
 
-import sebfisch.expressions.data.Add;
-import sebfisch.expressions.data.Div;
-import sebfisch.expressions.data.Expr;
-import sebfisch.expressions.data.Mul;
-import sebfisch.expressions.data.Neg;
-import sebfisch.expressions.data.Num;
-import sebfisch.expressions.data.Sub;
-
 public record Generator(SplittableRandom random) {
 
     private static final int SIZE_LIMIT = 100;
@@ -30,24 +22,24 @@ public record Generator(SplittableRandom random) {
 
     public Expr randomExpr(int size) {
         if (size == 0) {
-            return new Num(random.nextInt(0, NUM_LIMIT));
+            return new Expr.Num(random.nextInt(0, NUM_LIMIT));
         }
 
         final int exprType = random.nextInt(5);
 
         if (exprType == 0) {
-            return new Neg(randomExpr(size - 1));
+            return new Expr.Neg(randomExpr(size - 1));
         }
 
         BinaryOperator<Expr> bin = switch (exprType) {
             case 1 ->
-                Add::new;
+                Expr.Add::new;
             case 2 ->
-                Sub::new;
+                Expr.Sub::new;
             case 3 ->
-                Mul::new;
+                Expr.Mul::new;
             case 4 ->
-                Div::new;
+                Expr.Div::new;
             default ->
                 throw new IllegalStateException("exprType is between 1 and 4");
         };

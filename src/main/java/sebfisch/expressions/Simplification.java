@@ -1,13 +1,5 @@
 package sebfisch.expressions;
 
-import sebfisch.expressions.data.Add;
-import sebfisch.expressions.data.Expr;
-import sebfisch.expressions.data.Mul;
-import sebfisch.expressions.data.Neg;
-import sebfisch.expressions.data.Num;
-import sebfisch.expressions.data.Small;
-import sebfisch.expressions.data.Sub;
-
 public final class Simplification {
 
     private Simplification() {
@@ -23,10 +15,10 @@ public final class Simplification {
     private static Expr normalizeConst(Expr expr) {
         return switch (expr) {
             // nested patterns can only be type patterns or record patterns, not case constants
-            case Num(var value) when value == 0 ->
-                Small.ZERO;
-            case Num(var value) when value == 1 ->
-                Small.ONE;
+            case Expr.Num(var value) when value == 0 ->
+                Expr.Small.ZERO;
+            case Expr.Num(var value) when value == 1 ->
+                Expr.Small.ONE;
             default ->
                 expr;
         };
@@ -34,12 +26,12 @@ public final class Simplification {
 
     private static Expr removeNeg(Expr expr) {
         return switch (expr) {
-            case Neg(Neg(var e)) ->
+            case Expr.Neg(Expr.Neg(var e)) ->
                 e;
-            case Add(var l, Neg(var r)) ->
-                new Sub(l, r);
-            case Sub(var l, Neg(var r)) ->
-                new Add(l, r);
+            case Expr.Add(var l, Expr.Neg(var r)) ->
+                new Expr.Sub(l, r);
+            case Expr.Sub(var l, Expr.Neg(var r)) ->
+                new Expr.Add(l, r);
             default ->
                 expr;
         };
@@ -47,15 +39,15 @@ public final class Simplification {
 
     private static Expr removeNeutral(Expr expr) {
         return switch (expr) {
-            case Add(var l, var r) when l == Small.ZERO ->
+            case Expr.Add(var l, var r) when l == Expr.Small.ZERO ->
                 r;
-            case Add(var l, var r) when r == Small.ZERO ->
+            case Expr.Add(var l, var r) when r == Expr.Small.ZERO ->
                 l;
-            case Sub(var l, var r) when l == Small.ZERO ->
-                new Neg(r);
-            case Sub(var l, var r) when r == Small.ZERO ->
+            case Expr.Sub(var l, var r) when l == Expr.Small.ZERO ->
+                new Expr.Neg(r);
+            case Expr.Sub(var l, var r) when r == Expr.Small.ZERO ->
                 l;
-            case Mul(var l, var r) when l == Small.ONE ->
+            case Expr.Mul(var l, var r) when l == Expr.Small.ONE ->
                 r;
             default ->
                 expr;
