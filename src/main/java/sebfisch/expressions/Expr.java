@@ -8,11 +8,11 @@ public sealed interface Expr {
     public sealed interface Const extends Expr permits Small, Num {
     }
 
-    public enum Small implements Expr.Const {
+    public enum Small implements Const {
         ZERO, ONE
     }
 
-    public record Num(int value) implements Expr.Const {
+    public record Num(int value) implements Const {
 
     }
 
@@ -28,7 +28,7 @@ public sealed interface Expr {
         Expr withNested(Expr nested);
     }
 
-    public record Neg(Expr nested) implements Expr.Unary {
+    public record Neg(Expr nested) implements Unary {
 
         @Override
         public String op() {
@@ -50,7 +50,7 @@ public sealed interface Expr {
         Expr withNested(Expr left, Expr right);
     }
 
-    public record Add(Expr left, Expr right) implements Expr.Binary {
+    public record Add(Expr left, Expr right) implements Binary {
 
         @Override
         public String op() {
@@ -63,7 +63,7 @@ public sealed interface Expr {
         }
     }
 
-    public record Sub(Expr left, Expr right) implements Expr.Binary {
+    public record Sub(Expr left, Expr right) implements Binary {
 
         @Override
         public String op() {
@@ -76,7 +76,7 @@ public sealed interface Expr {
         }
     }
 
-    public record Mul(Expr left, Expr right) implements Expr.Binary {
+    public record Mul(Expr left, Expr right) implements Binary {
 
         @Override
         public String op() {
@@ -89,7 +89,7 @@ public sealed interface Expr {
         }
     }
 
-    public record Div(Expr left, Expr right) implements Expr.Binary {
+    public record Div(Expr left, Expr right) implements Binary {
 
         @Override
         public String op() {
