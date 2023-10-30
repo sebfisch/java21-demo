@@ -3,8 +3,6 @@ package sebfisch.expressions;
 import java.util.Arrays;
 import java.util.function.UnaryOperator;
 
-import sebfisch.expressions.data.Expr;
-
 @FunctionalInterface
 public interface Transform extends UnaryOperator<Expr> {
 

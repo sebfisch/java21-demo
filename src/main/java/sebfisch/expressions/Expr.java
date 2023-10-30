@@ -1,4 +1,4 @@
-package sebfisch.expressions.data;
+package sebfisch.expressions;
 
 import java.util.function.Consumer;
 import java.util.stream.Stream;
@@ -6,6 +6,14 @@ import java.util.stream.Stream;
 public sealed interface Expr {
 
     public sealed interface Const extends Expr permits Small, Num {
+    }
+
+    public enum Small implements Expr.Const {
+        ZERO, ONE
+    }
+
+    public record Num(int value) implements Expr.Const {
+
     }
 
     public sealed interface OpExpr extends Expr permits Unary, Binary {
@@ -20,6 +28,19 @@ public sealed interface Expr {
         Expr withNested(Expr nested);
     }
 
+    public record Neg(Expr nested) implements Expr.Unary {
+
+        @Override
+        public String op() {
+            return "-";
+        }
+
+        @Override
+        public Expr withNested(Expr nested) {
+            return new Neg(nested);
+        }
+    }
+
     public sealed interface Binary extends OpExpr permits Add, Sub, Mul, Div {
 
         Expr left();
@@ -27,6 +48,58 @@ public sealed interface Expr {
         Expr right();
 
         Expr withNested(Expr left, Expr right);
+    }
+
+    public record Add(Expr left, Expr right) implements Expr.Binary {
+
+        @Override
+        public String op() {
+            return "+";
+        }
+
+        @Override
+        public Expr withNested(Expr left, Expr right) {
+            return new Add(left, right);
+        }
+    }
+
+    public record Sub(Expr left, Expr right) implements Expr.Binary {
+
+        @Override
+        public String op() {
+            return "-";
+        }
+
+        @Override
+        public Expr withNested(Expr left, Expr right) {
+            return new Sub(left, right);
+        }
+    }
+
+    public record Mul(Expr left, Expr right) implements Expr.Binary {
+
+        @Override
+        public String op() {
+            return "*";
+        }
+
+        @Override
+        public Expr withNested(Expr left, Expr right) {
+            return new Mul(left, right);
+        }
+    }
+
+    public record Div(Expr left, Expr right) implements Expr.Binary {
+
+        @Override
+        public String op() {
+            return "/";
+        }
+
+        @Override
+        public Expr withNested(Expr left, Expr right) {
+            return new Div(left, right);
+        }
     }
 
     default String format() {
