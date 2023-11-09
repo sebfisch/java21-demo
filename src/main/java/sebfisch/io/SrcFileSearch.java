@@ -1,7 +1,6 @@
 package sebfisch.io;
 
 import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
@@ -13,12 +12,17 @@ public class SrcFileSearch {
 
     record FileMatches(Path fileName, List<String> matchingLines) {
 
-        static FileMatches from(Path fileName, Predicate<String> match) {
+        static IO<FileMatches> from(Path fileName, Predicate<String> match) {
             try (Stream<String> lines = Files.lines(fileName)) {
-                return new FileMatches(fileName, lines.filter(match).toList());
+                return new IO.Result<>(new FileMatches(fileName, lines.filter(match).toList()));
             } catch (IOException e) {
-                throw new UncheckedIOException(e);
+                return new IO.Failure<>(e);
             }
+        }
+
+        void print() {
+            System.out.println(fileName);
+            matchingLines.forEach(System.out::println);
         }
     }
 
@@ -31,11 +35,10 @@ public class SrcFileSearch {
             javaFiles
                     .map(Path::toAbsolutePath)
                     .map(file -> FileMatches.from(file, containsMatch))
-                    .filter(result -> !result.matchingLines().isEmpty())
-                    .peek(result -> System.out.println(result.fileName()))
-                    .flatMap(result -> result.matchingLines().stream())
-                    .forEach(System.out::println);
-        } catch (IOException | UncheckedIOException e) {
+                    .mapMulti(IO<FileMatches>::onSuccess)
+                    .filter(matches -> !matches.matchingLines().isEmpty())
+                    .forEach(FileMatches::print);
+        } catch (IOException e) {
             System.err.println(e.getMessage());
         }
     }
