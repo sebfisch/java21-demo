@@ -35,6 +35,7 @@ public class SrcFileSearch {
             javaFiles
                     .map(Path::toAbsolutePath)
                     .map(file -> FileMatches.from(file, containsMatch))
+                    .peek(IO::printErrorMessage)
                     .mapMulti(IO<FileMatches>::onSuccess)
                     .filter(matches -> !matches.matchingLines().isEmpty())
                     .forEach(FileMatches::print);

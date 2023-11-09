@@ -18,4 +18,14 @@ public sealed interface IO<T> {
             consumer.accept(value);
         }
     }
+
+    default void onFailure(Consumer<IOException> consumer) {
+        if (this instanceof Failure(var exception)) {
+            consumer.accept(exception);
+        }
+    }
+
+    default void printErrorMessage() {
+        onFailure(e -> System.err.println(e.getMessage()));
+    }
 }
