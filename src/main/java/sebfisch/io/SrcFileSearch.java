@@ -20,11 +20,6 @@ public class SrcFileSearch {
                 throw new UncheckedIOException(e);
             }
         }
-
-        void print() {
-            System.out.println(fileName);
-            matchingLines.forEach(System.out::println);
-        }
     }
 
     public static void main(final String[] args) {
@@ -37,7 +32,10 @@ public class SrcFileSearch {
                     .map(Path::toAbsolutePath)
                     .map(file -> FileMatches.from(file, containsMatch))
                     .filter(matches -> !matches.matchingLines().isEmpty())
-                    .forEach(FileMatches::print);
+                    .peek(matches -> System.out.println(matches.fileName()))
+                    .map(FileMatches::matchingLines)
+                    .mapMulti(List::forEach)
+                    .forEach(System.out::println);
         } catch (IOException | UncheckedIOException e) {
             System.err.println(e.getMessage());
         }
