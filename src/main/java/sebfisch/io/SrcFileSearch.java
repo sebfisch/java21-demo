@@ -19,11 +19,6 @@ public class SrcFileSearch {
                 return new IO.Error<>(e);
             }
         }
-
-        void print() {
-            System.out.println(fileName);
-            matchingLines.forEach(System.out::println);
-        }
     }
 
     public static void main(final String[] args) {
@@ -38,7 +33,9 @@ public class SrcFileSearch {
                     .peek(IO::printErrorMessage)
                     .mapMulti(IO<FileMatches>::ifResult)
                     .filter(matches -> !matches.matchingLines().isEmpty())
-                    .forEach(FileMatches::print);
+                    .peek(matches -> System.out.println(matches.fileName()))
+                    .mapMulti((matches, include) -> matches.matchingLines().forEach(include))
+                    .forEach(System.out::println);
         } catch (IOException e) {
             System.err.println(e.getMessage());
         }
