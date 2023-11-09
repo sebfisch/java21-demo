@@ -33,7 +33,8 @@ public class SrcFileSearch {
                     .map(file -> FileMatches.from(file, containsMatch))
                     .filter(matches -> !matches.matchingLines().isEmpty())
                     .peek(matches -> System.out.println(matches.fileName()))
-                    .mapMulti((matches, include) -> matches.matchingLines().forEach(include))
+                    .map(FileMatches::matchingLines)
+                    .mapMulti(List::forEach)
                     .forEach(System.out::println);
         } catch (IOException | UncheckedIOException e) {
             System.err.println(e.getMessage());
