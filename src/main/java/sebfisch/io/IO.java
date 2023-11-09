@@ -9,23 +9,23 @@ public sealed interface IO<T> {
 
     }
 
-    record Failure<T>(IOException exception) implements IO<T> {
+    record Error<T>(IOException exception) implements IO<T> {
 
     }
 
-    default void onSuccess(Consumer<T> consumer) {
+    default void ifResult(Consumer<T> consumer) {
         if (this instanceof Result(var value)) {
             consumer.accept(value);
         }
     }
 
-    default void onFailure(Consumer<IOException> consumer) {
-        if (this instanceof Failure(var exception)) {
+    default void ifError(Consumer<IOException> consumer) {
+        if (this instanceof Error(var exception)) {
             consumer.accept(exception);
         }
     }
 
     default void printErrorMessage() {
-        onFailure(e -> System.err.println(e.getMessage()));
+        ifError(e -> System.err.println(e.getMessage()));
     }
 }

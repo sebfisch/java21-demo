@@ -16,7 +16,7 @@ public class SrcFileSearch {
             try (Stream<String> lines = Files.lines(fileName)) {
                 return new IO.Result<>(new FileMatches(fileName, lines.filter(match).toList()));
             } catch (IOException e) {
-                return new IO.Failure<>(e);
+                return new IO.Error<>(e);
             }
         }
 
@@ -36,7 +36,7 @@ public class SrcFileSearch {
                     .map(Path::toAbsolutePath)
                     .map(file -> FileMatches.from(file, containsMatch))
                     .peek(IO::printErrorMessage)
-                    .mapMulti(IO<FileMatches>::onSuccess)
+                    .mapMulti(IO<FileMatches>::ifResult)
                     .filter(matches -> !matches.matchingLines().isEmpty())
                     .forEach(FileMatches::print);
         } catch (IOException e) {
