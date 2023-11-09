@@ -24,8 +24,4 @@ public sealed interface IO<T> {
             consumer.accept(exception);
         }
     }
-
-    default void printErrorMessage() {
-        ifError(e -> System.err.println(e.getMessage()));
-    }
 }

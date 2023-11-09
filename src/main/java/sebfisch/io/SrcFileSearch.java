@@ -30,7 +30,7 @@ public class SrcFileSearch {
             javaFiles
                     .map(Path::toAbsolutePath)
                     .map(file -> FileMatches.from(file, containsMatch))
-                    .peek(IO::printErrorMessage)
+                    .peek(io -> io.ifError(e -> System.err.println(e.getMessage())))
                     .mapMulti(IO<FileMatches>::ifResult)
                     .filter(matches -> !matches.matchingLines().isEmpty())
                     .peek(matches -> System.out.println(matches.fileName()))
