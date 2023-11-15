@@ -13,7 +13,7 @@ public interface Transform extends UnaryOperator<Expr> {
     }
 
     default Transform combine(Transform that) {
-        return e -> that.compose(this).apply(e); // this before that
+        return this.andThen(that)::apply;
     }
 
     default Transform recursively() {
