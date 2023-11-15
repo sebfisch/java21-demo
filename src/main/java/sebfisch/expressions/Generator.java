@@ -41,7 +41,7 @@ public record Generator(SplittableRandom random) {
             case 4 ->
                 Expr.Div::new;
             default ->
-                throw new IllegalStateException("exprType is between 1 and 4");
+                throw new IllegalStateException("unreachable");
         };
 
         final int leftSize = random.nextInt(size);

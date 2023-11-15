@@ -135,4 +135,8 @@ public sealed interface Expr {
         }
         action.accept(this);
     }
+
+    default long size() {
+        return included().filter(e -> !(e instanceof Const)).count();
+    }
 }
