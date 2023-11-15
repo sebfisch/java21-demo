@@ -5,7 +5,7 @@
     "commands": [
       {
         "match": "\\.java$",
-        "cmd": "perl -i -0pe 's/(EXPR\\.)\\s+/$1/g' ${file}"
+        "cmd": "perl -i -0pe 's/(((STR)|(EXPR))\\.)\\s+/$1/g' ${file}"
       }
     ]
   }

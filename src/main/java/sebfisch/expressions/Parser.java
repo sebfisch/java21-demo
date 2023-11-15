@@ -1,5 +1,6 @@
 package sebfisch.expressions;
 
+import static java.lang.StringTemplate.STR;
 import java.util.List;
 import java.util.Scanner;
 import java.util.function.BinaryOperator;
@@ -12,7 +13,7 @@ public record Parser(Scanner input) {
                 .filter(value -> !(value instanceof Integer))
                 .toList();
         if (!invalidValues.isEmpty()) {
-            throw new IllegalArgumentException("invalid values: %s".formatted(invalidValues));
+            throw new IllegalArgumentException(STR."invalid values: \{invalidValues}");
         }
         final String input = StringTemplate.interpolate(template.fragments(), template.values());
         return new Parser(input).parseExpression();
