@@ -39,11 +39,7 @@ class ExprTests {
     @MethodSource("smallSize")
     public void generatedHasCorrectSize(int size) {
         IntStream.range(0, 10).forEach(unused -> {
-            final Expr generated = GEN.randomExpr(size);
-            final long genSize = generated.included()
-                    .filter(e -> !(e instanceof Expr.Const))
-                    .count();
-            assertEquals(size, genSize);
+            assertEquals(size, GEN.randomExpr(size).size());
         });
     }
 }
