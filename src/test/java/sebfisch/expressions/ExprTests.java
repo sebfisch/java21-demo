@@ -4,10 +4,23 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
 class ExprTests {
+
+    @Test
+    public void testFormattingParsedExpr() {
+        final String string = "(1 + 2)";
+        assertEquals(string, new Parser(string).parseExpression().format());
+    }
+
+    @Test
+    public void testParsingFormattedExpr() {
+        final Expr expr = new Parser("(1 + 2)").parseExpression();
+        assertEquals(expr, new Parser(expr.format()).parseExpression());
+    }
 
     private static final Generator GEN = new Generator();
 
