@@ -7,7 +7,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-// shuf -r -i 1-10 -n 100000 | java -cp target/classes sebfisch.SleepSort
+// shuf -r -i 1-10 -n 100000 | ./java.sh sebfisch.SleepSort
 public record SleepSort(ExecutorService executor) {
 
     public static void main(String[] args) {
