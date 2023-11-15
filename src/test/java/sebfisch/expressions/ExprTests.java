@@ -8,6 +8,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import static sebfisch.expressions.Parser.EXPR;
+
 class ExprTests {
 
     @Test
@@ -18,7 +20,7 @@ class ExprTests {
 
     @Test
     public void testParsingFormattedExpr() {
-        final Expr expr = new Parser("(1 + 2)").parseExpression();
+        final Expr expr = EXPR."(1 + 2)";
         assertEquals(expr, new Parser(expr.format()).parseExpression());
     }
 
