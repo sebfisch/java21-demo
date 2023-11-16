@@ -137,6 +137,6 @@ public sealed interface Expr {
     }
 
     default long size() {
-        return included().filter(e -> !(e instanceof Const)).count();
+        return included().filter(e -> e instanceof OpExpr).count();
     }
 }
