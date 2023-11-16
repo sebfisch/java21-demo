@@ -66,7 +66,7 @@ class ExprTests {
 
     }
 
-    public static Stream<ExprWithSize> smallRandomExpr() {
+    public static Stream<ExprWithSize> smallRandomExpression() {
         return IntStream.range(0, 100).boxed().mapMulti((size, addToStream) -> {
             IntStream.range(0, 10).forEach(unused -> {
                 addToStream.accept(new ExprWithSize(GEN.randomExpr(size), size));
@@ -75,7 +75,7 @@ class ExprTests {
     }
 
     @ParameterizedTest
-    @MethodSource("smallRandomExpr")
+    @MethodSource("smallRandomExpression")
     public void generatedHasCorrectSize(ExprWithSize e) {
         assertEquals(e.size(), e.expr().size());
     }
