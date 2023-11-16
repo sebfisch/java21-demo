@@ -11,6 +11,13 @@ import org.junit.jupiter.params.provider.MethodSource;
 class ExprTests {
 
     @Test
+    public void testFormattingSimpleExpression() {
+        final Expr expr = new Expr.Add(Expr.Small.ONE, new Expr.Num(2));
+        final String string = "(1 + 2)";
+        assertEquals(string, expr.format());
+    }
+
+    @Test
     public void testFormattingParsedExpr() {
         final String string = "(1 + 2)";
         assertEquals(string, new Parser(string).parseExpression().format());
