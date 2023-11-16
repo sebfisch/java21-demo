@@ -59,8 +59,6 @@ public final class Simplification {
         return switch (expr) {
             case Expr.Mul e when e.left() == Expr.Small.ZERO || e.right() == Expr.Small.ZERO ->
                 Expr.Small.ZERO;
-            case Expr.Div e when e.left() == Expr.Small.ZERO ->
-                Expr.Small.ZERO;
             default ->
                 expr;
         };
