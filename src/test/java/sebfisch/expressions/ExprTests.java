@@ -40,6 +40,12 @@ class ExprTests {
         assertEquals(3, counter.intValue());
     }
 
+    @Test
+    public void testSimplifyingSimpleExpression() {
+        final Expr expr = new Expr.Mul(new Expr.Num(0), Expr.Small.ONE);
+        assertEquals(Expr.Small.ZERO, Simplification.TRANSFORM.apply(expr));
+    }
+
     private static final Generator GEN = new Generator();
 
     public static Stream<Expr> randomExpression() {
