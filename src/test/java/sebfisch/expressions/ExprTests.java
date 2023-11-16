@@ -62,15 +62,21 @@ class ExprTests {
         assertEquals(string, new Parser(string).parseExpression().format());
     }
 
-    public static IntStream smallSize() {
-        return IntStream.range(0, 100);
+    private record ExprWithSize(Expr expr, int size) {
+
+    }
+
+    public static Stream<ExprWithSize> smallRandomExpr() {
+        return IntStream.range(0, 100).boxed().mapMulti((size, addToStream) -> {
+            IntStream.range(0, 10).forEach(unused -> {
+                addToStream.accept(new ExprWithSize(GEN.randomExpr(size), size));
+            });
+        });
     }
 
     @ParameterizedTest
-    @MethodSource("smallSize")
-    public void generatedHasCorrectSize(int size) {
-        IntStream.range(0, 10).forEach(unused -> {
-            assertEquals(size, GEN.randomExpr(size).size());
-        });
+    @MethodSource("smallRandomExpr")
+    public void generatedHasCorrectSize(ExprWithSize e) {
+        assertEquals(e.size(), e.expr().size());
     }
 }
