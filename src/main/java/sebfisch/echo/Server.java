@@ -5,6 +5,7 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import static java.lang.StringTemplate.STR;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.ExecutorService;
@@ -26,7 +27,7 @@ public record Server(
     }
 
     public Server   {
-        System.out.println("listening on port %s".formatted(socket.getLocalPort()));
+        System.out.println(STR."listening on port \{socket.getLocalPort()}");
     }
 
     private Server() throws IOException {

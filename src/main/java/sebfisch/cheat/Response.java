@@ -14,9 +14,9 @@ public sealed interface Response {
         default String message() {
             return switch (this) {
                 case CommunicationError(var msg) ->
-                    "communication error: %s".formatted(msg);
+                    STR."communication error: \{msg}";
                 case HttpError(var status) ->
-                    "HTTP response with status: %s".formatted(status);
+                    STR."HTTP response with status: \{status}";
             };
         }
     }

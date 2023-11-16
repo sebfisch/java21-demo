@@ -41,7 +41,7 @@ public record Parser(Scanner input) {
     }
 
     private IllegalStateException parseError() {
-        return new IllegalStateException("cannot parse %s".formatted(input));
+        return new IllegalStateException(STR."cannot parse \{input}");
     }
 
     private Expr parseExpr() {

@@ -1,5 +1,6 @@
 package sebfisch.expressions;
 
+import static java.lang.StringTemplate.STR;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
@@ -111,9 +112,9 @@ public sealed interface Expr {
             case Num(var value) ->
                 Integer.toString(value);
             case Neg(var e) ->
-                "-%s".formatted(e.format());
+                STR."-\{e.format()}";
             case Binary bin ->
-                "(%s %s %s)".formatted(bin.left().format(), bin.op(), bin.right().format());
+                STR."(\{bin.left().format()} \{bin.op()} \{bin.right().format()})";
         };
     }
 
