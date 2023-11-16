@@ -1,5 +1,6 @@
 package sebfisch.expressions;
 
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -13,6 +14,13 @@ import static sebfisch.expressions.Parser.EXPR;
 class ExprTests {
 
     @Test
+    public void testFormattingSimpleExpression() {
+        final Expr expr = new Expr.Add(Expr.Small.ONE, new Expr.Num(2));
+        final String string = "(1 + 2)";
+        assertEquals(string, expr.format());
+    }
+
+    @Test
     public void testFormattingParsedExpr() {
         final String string = "(1 + 2)";
         assertEquals(string, new Parser(string).parseExpression().format());
@@ -22,6 +30,22 @@ class ExprTests {
     public void testParsingFormattedExpr() {
         final Expr expr = EXPR."(1 + 2)";
         assertEquals(expr, new Parser(expr.format()).parseExpression());
+    }
+
+    @Test
+    public void testTraversingSimpleExpression() {
+        final Expr expr = new Expr.Add(Expr.Small.ONE, new Expr.Num(2));
+        AtomicInteger counter = new AtomicInteger(0);
+        expr.forEachIncluded(e -> {
+            counter.incrementAndGet();
+        });
+        assertEquals(3, counter.intValue());
+    }
+
+    @Test
+    public void testSimplifyingSimpleExpression() {
+        final Expr expr = new Expr.Mul(new Expr.Num(0), Expr.Small.ONE);
+        assertEquals(Expr.Small.ZERO, Simplification.TRANSFORM.apply(expr));
     }
 
     private static final Generator GEN = new Generator();
@@ -46,15 +70,21 @@ class ExprTests {
         assertEquals(string, new Parser(string).parseExpression().format());
     }
 
-    public static IntStream smallSize() {
-        return IntStream.range(0, 100);
+    private record ExprWithSize(Expr expr, int size) {
+
+    }
+
+    public static Stream<ExprWithSize> smallRandomExpression() {
+        return IntStream.range(0, 100).boxed().mapMulti((size, addToStream) -> {
+            IntStream.range(0, 10).forEach(unused -> {
+                addToStream.accept(new ExprWithSize(GEN.randomExpr(size), size));
+            });
+        });
     }
 
     @ParameterizedTest
-    @MethodSource("smallSize")
-    public void generatedHasCorrectSize(int size) {
-        IntStream.range(0, 10).forEach(unused -> {
-            assertEquals(size, GEN.randomExpr(size).size());
-        });
+    @MethodSource("smallRandomExpression")
+    public void generatedHasCorrectSize(ExprWithSize e) {
+        assertEquals(e.size(), e.expr().size());
     }
 }

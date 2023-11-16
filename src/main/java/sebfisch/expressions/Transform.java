@@ -1,7 +1,7 @@
 package sebfisch.expressions;
 
-import java.util.Arrays;
 import java.util.function.UnaryOperator;
+import java.util.stream.Stream;
 
 @FunctionalInterface
 public interface Transform extends UnaryOperator<Expr> {
@@ -9,7 +9,7 @@ public interface Transform extends UnaryOperator<Expr> {
     static final Transform NO_CHANGE = e -> e;
 
     static Transform combineAll(Transform... transforms) {
-        return Arrays.asList(transforms).stream().reduce(NO_CHANGE, Transform::combine);
+        return Stream.of(transforms).reduce(NO_CHANGE, Transform::combine);
     }
 
     default Transform combine(Transform that) {
@@ -22,8 +22,8 @@ public interface Transform extends UnaryOperator<Expr> {
                 e.withNested(recursively().apply(e.nested()));
             case Expr.Binary e ->
                 e.withNested(recursively().apply(e.left()), recursively().apply(e.right()));
-            default ->
-                expr;
+            case Expr.Const e ->
+                e;
         });
     }
 }
