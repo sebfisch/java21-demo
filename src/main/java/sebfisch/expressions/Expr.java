@@ -122,18 +122,18 @@ public sealed interface Expr {
     }
 
     default void forEachIncluded(final Consumer<Expr> action) {
+        action.accept(this);
         switch (this) {
             case Unary self -> {
                 self.nested().forEachIncluded(action);
             }
             case Binary self -> {
-                self.right().forEachIncluded(action);
                 self.left().forEachIncluded(action);
+                self.right().forEachIncluded(action);
             }
             default -> {
             }
         }
-        action.accept(this);
     }
 
     default long size() {
