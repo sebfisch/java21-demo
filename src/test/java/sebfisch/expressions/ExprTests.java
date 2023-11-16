@@ -1,5 +1,6 @@
 package sebfisch.expressions;
 
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -27,6 +28,16 @@ class ExprTests {
     public void testParsingFormattedExpr() {
         final Expr expr = new Parser("(1 + 2)").parseExpression();
         assertEquals(expr, new Parser(expr.format()).parseExpression());
+    }
+
+    @Test
+    public void testTraversingSimpleExpression() {
+        final Expr expr = new Expr.Add(Expr.Small.ONE, new Expr.Num(2));
+        AtomicInteger counter = new AtomicInteger(0);
+        expr.forEachIncluded(e -> {
+            counter.incrementAndGet();
+        });
+        assertEquals(3, counter.intValue());
     }
 
     private static final Generator GEN = new Generator();
