@@ -1,7 +1,6 @@
 package sebfisch.io;
 
 import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
@@ -9,41 +8,40 @@ import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
+import sebfisch.util.Partial;
+
 public class SrcFileSearch {
 
     record FileMatches(Path fileName, List<String> matchingLines) {
 
-        static FileMatches from(Path fileName, Predicate<String> match) {
+        static Partial<FileMatches, IOException> from(Path fileName, Predicate<String> isMatching) {
             try (Stream<String> lines = Files.lines(fileName)) {
-                return new FileMatches(fileName, lines.filter(match).toList());
+                List<String> matchingLines = lines.filter(isMatching).toList();
+                return new Partial.Success<>(new FileMatches(fileName, matchingLines));
             } catch (IOException e) {
-                throw new UncheckedIOException(e);
+                return new Partial.Failure<>(e);
             }
         }
     }
 
     public static void main(final String[] args) {
         final Path srcPath = Path.of("src");
-        final String regExp = "public static[^=]*\\(";
-        final Predicate<String> containsMatch = Pattern.compile(regExp).asPredicate();
+        final String regExp = "sealed interface";
+        final Predicate<String> isMatching = Pattern.compile(regExp).asPredicate();
 
-        try (Stream<Path> javaFiles = walkJavaFiles(srcPath)) {
-            javaFiles
+        try (Stream<Path> srcFiles = Files.walk(srcPath).filter(Files::isRegularFile)) {
+            srcFiles
                     .map(Path::toAbsolutePath)
-                    .map(file -> FileMatches.from(file, containsMatch))
+                    .map(file -> FileMatches.from(file, isMatching))
+                    .peek(partial -> partial.ifFailure(System.err::println))
+                    .mapMulti(Partial<FileMatches, IOException>::ifSuccess)
                     .filter(matches -> !matches.matchingLines().isEmpty())
                     .peek(matches -> System.out.println(matches.fileName()))
                     .map(FileMatches::matchingLines)
                     .mapMulti(List::forEach)
                     .forEach(System.out::println);
-        } catch (IOException | UncheckedIOException e) {
+        } catch (IOException e) {
             System.err.println(e.getMessage());
         }
-    }
-
-    private static Stream<Path> walkJavaFiles(final Path root) throws IOException {
-        return Files.walk(root) //
-                .filter(Files::isReadable) //
-                .filter(path -> path.toString().endsWith(".java"));
     }
 }
