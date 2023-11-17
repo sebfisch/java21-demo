@@ -6,9 +6,12 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
+
+import sebfisch.util.Partial;
 
 class ExprTests {
 
@@ -27,7 +30,7 @@ class ExprTests {
     @Test
     public void testIntOverflow() {
         final Expr expr = new Expr.Add(new Expr.Num(Integer.MAX_VALUE), Expr.Small.ONE);
-        assertEquals(Integer.MIN_VALUE, expr.value());
+        assertThrows(ArithmeticException.class, () -> expr.value());
     }
 
     @Test
@@ -36,7 +39,37 @@ class ExprTests {
                 new Expr.Num(Integer.MIN_VALUE),
                 new Expr.Neg(Expr.Small.ONE)
         );
-        assertEquals(Integer.MIN_VALUE, expr.value());
+        assertThrows(ArithmeticException.class, () -> expr.value());
+    }
+
+    @Test
+    public void testPartialDivisionByZero() {
+        final Expr expr = new Expr.Div(Expr.Small.ONE, Expr.Small.ZERO);
+        assertTrue(
+                expr.partialValue() instanceof Partial.Failure(var e)
+                && e instanceof ArithmeticException
+        );
+    }
+
+    @Test
+    public void testPartialIntOverflow() {
+        final Expr expr = new Expr.Add(new Expr.Num(Integer.MAX_VALUE), Expr.Small.ONE);
+        assertTrue(
+                expr.partialValue() instanceof Partial.Failure(var e)
+                && e instanceof ArithmeticException
+        );
+    }
+
+    @Test
+    public void testPartialDivOverflow() {
+        final Expr expr = new Expr.Div(
+                new Expr.Num(Integer.MIN_VALUE),
+                new Expr.Neg(Expr.Small.ONE)
+        );
+        assertTrue(
+                expr.partialValue() instanceof Partial.Failure(var e)
+                && e instanceof ArithmeticException
+        );
     }
 
     @Test
@@ -114,9 +147,15 @@ class ExprTests {
         assertEquals(e.size(), e.expr().size());
     }
 
+    public static Stream<Expr> safeRandomExpression() {
+        return Stream.generate(GEN::randomExpr)
+                .filter(e -> e.partialValue() instanceof Partial.Success)
+                .limit(1000);
+    }
+
     @ParameterizedTest
-    @MethodSource("randomExpression")
+    @MethodSource("safeRandomExpression")
     public void simplifiedHasSameResult(Expr expr) {
-        assertEquals(Evaluation.eval(expr), Evaluation.eval(Simplification.TRANSFORM.apply(expr)));
+        assertEquals(expr.value(), Simplification.TRANSFORM.apply(expr).value());
     }
 }

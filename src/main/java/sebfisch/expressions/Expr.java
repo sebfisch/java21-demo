@@ -3,6 +3,8 @@ package sebfisch.expressions;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
+import sebfisch.util.Partial;
+
 public sealed interface Expr {
 
     public sealed interface Const extends Expr permits Small, Num {
@@ -111,16 +113,24 @@ public sealed interface Expr {
             case Num(var i) ->
                 i;
             case Neg(var e) ->
-                -e.value();
+                Math.negateExact(e.value());
             case Add(var l, var r) ->
-                l.value() + r.value();
+                Math.addExact(l.value(), r.value());
             case Sub(var l, var r) ->
-                l.value() - r.value();
+                Math.subtractExact(l.value(), r.value());
             case Mul(var l, var r) ->
-                l.value() * r.value();
+                Math.multiplyExact(l.value(), r.value());
             case Div(var l, var r) ->
-                l.value() / r.value();
+                Math.divideExact(l.value(), r.value());
         };
+    }
+
+    default Partial<Integer, ArithmeticException> partialValue() {
+        try {
+            return new Partial.Success<>(value());
+        } catch (ArithmeticException e) {
+            return new Partial.Failure<>(e);
+        }
     }
 
     default String format() {

@@ -9,7 +9,8 @@ public final class Simplification {
             = Transform.combineAll(
                     Simplification::normalizeConst,
                     Simplification::removeNeg,
-                    Simplification::removeNeutral
+                    Simplification::removeNeutral,
+                    Simplification::cancelMul
             ).recursively();
 
     private static Expr normalizeConst(Expr expr) {
@@ -49,6 +50,15 @@ public final class Simplification {
                 l;
             case Expr.Mul(var l, var r) when l == Expr.Small.ONE ->
                 r;
+            default ->
+                expr;
+        };
+    }
+
+    private static Expr cancelMul(Expr expr) {
+        return switch (expr) {
+            case Expr.Mul e when e.left() == Expr.Small.ZERO || e.right() == Expr.Small.ZERO ->
+                Expr.Small.ZERO;
             default ->
                 expr;
         };
