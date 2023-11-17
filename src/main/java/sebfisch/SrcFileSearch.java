@@ -12,7 +12,7 @@ import sebfisch.util.Partial;
 
 public class SrcFileSearch {
 
-    record FileMatches(Path fileName, List<String> matchingLines) {
+    private record FileMatches(Path fileName, List<String> matchingLines) {
 
         static Partial<FileMatches, IOException> from(Path fileName, Predicate<String> isMatching) {
             try (Stream<String> lines = Files.lines(fileName)) {
@@ -25,8 +25,8 @@ public class SrcFileSearch {
     }
 
     public static void main(final String[] args) {
-        final Path srcPath = Path.of("src");
-        final String regExp = "sealed interface";
+        final Path srcPath = Path.of(args[0]);
+        final String regExp = args[1];
         final Predicate<String> isMatching = Pattern.compile(regExp).asPredicate();
 
         try (Stream<Path> srcFiles = Files.walk(srcPath).filter(Files::isRegularFile)) {
