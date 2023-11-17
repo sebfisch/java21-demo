@@ -5,11 +5,39 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
 class ExprTests {
+
+    @Test
+    public void testEvaluatingSimpleExpression() {
+        final Expr expr = new Expr.Add(Expr.Small.ONE, new Expr.Num(2));
+        assertEquals(3, expr.value());
+    }
+
+    @Test
+    public void testDivisionByZero() {
+        final Expr expr = new Expr.Div(Expr.Small.ONE, Expr.Small.ZERO);
+        assertThrows(ArithmeticException.class, () -> expr.value());
+    }
+
+    @Test
+    public void testIntOverflow() {
+        final Expr expr = new Expr.Add(new Expr.Num(Integer.MAX_VALUE), Expr.Small.ONE);
+        assertEquals(Integer.MIN_VALUE, expr.value());
+    }
+
+    @Test
+    public void testDivOverflow() {
+        final Expr expr = new Expr.Div(
+                new Expr.Num(Integer.MIN_VALUE),
+                new Expr.Neg(Expr.Small.ONE)
+        );
+        assertEquals(Integer.MIN_VALUE, expr.value());
+    }
 
     @Test
     public void testFormattingSimpleExpression() {
