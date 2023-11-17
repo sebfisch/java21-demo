@@ -1,4 +1,4 @@
-package sebfisch.io;
+package sebfisch;
 
 import java.io.IOException;
 import java.nio.file.Files;
