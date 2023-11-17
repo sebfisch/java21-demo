@@ -12,7 +12,7 @@ public sealed interface Expr {
         ZERO, ONE
     }
 
-    public record Num(int value) implements Const {
+    public record Num(int intValue) implements Const {
 
     }
 
@@ -102,14 +102,31 @@ public sealed interface Expr {
         }
     }
 
-    default String format() {
+    default int value() {
         return switch (this) {
             case Small.ZERO ->
-                "0";
+                0;
             case Small.ONE ->
-                "1";
-            case Num(var value) ->
-                Integer.toString(value);
+                1;
+            case Num(var i) ->
+                i;
+            case Neg(var e) ->
+                -e.value();
+            case Add(var l, var r) ->
+                l.value() + r.value();
+            case Sub(var l, var r) ->
+                l.value() - r.value();
+            case Mul(var l, var r) ->
+                l.value() * r.value();
+            case Div(var l, var r) ->
+                l.value() / r.value();
+        };
+    }
+
+    default String format() {
+        return switch (this) {
+            case Const e ->
+                Integer.toString(e.value());
             case Neg(var e) ->
                 "-%s".formatted(e.format());
             case Binary bin ->
