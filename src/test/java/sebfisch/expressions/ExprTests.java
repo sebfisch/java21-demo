@@ -4,6 +4,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -99,6 +100,13 @@ class ExprTests {
             counter.incrementAndGet();
         });
         assertEquals(3, counter.intValue());
+    }
+
+    @Test
+    public void testTraversingConstants() {
+        final Expr expr = new Expr.Add(Expr.Small.ONE, new Expr.Num(2));
+        int[] constants = expr.includedConstants().toArray();
+        assertArrayEquals(new int[]{1, 2}, constants);
     }
 
     @Test

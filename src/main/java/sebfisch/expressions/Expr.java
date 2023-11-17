@@ -1,6 +1,7 @@
 package sebfisch.expressions;
 
 import java.util.function.Consumer;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import sebfisch.util.Partial;
@@ -165,5 +166,11 @@ public sealed interface Expr {
 
     default long size() {
         return included().filter(e -> e instanceof OpExpr).count();
+    }
+
+    default IntStream includedConstants() {
+        return included()
+                .filter(e -> e instanceof Expr.Const)
+                .mapToInt(Expr::value);
     }
 }
