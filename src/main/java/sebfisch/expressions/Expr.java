@@ -1,10 +1,10 @@
 package sebfisch.expressions;
 
 import static java.lang.StringTemplate.STR;
-import java.util.function.Consumer;
-import java.util.stream.Stream;
 
-public sealed interface Expr {
+import sebfisch.util.Tree;
+
+public sealed interface Expr extends Tree<Expr> {
 
     public sealed interface Const extends Expr permits Small, Num {
     }
@@ -17,19 +17,12 @@ public sealed interface Expr {
 
     }
 
-    public sealed interface OpExpr extends Expr permits Unary, Binary {
+    public sealed interface OpExpr extends Expr permits Neg, BinOpExpr {
 
         String op();
     }
 
-    public sealed interface Unary extends OpExpr permits Neg {
-
-        Expr nested();
-
-        Expr withNested(Expr nested);
-    }
-
-    public record Neg(Expr nested) implements Unary {
+    public record Neg(Expr child) implements OpExpr, Tree.Unary<Expr> {
 
         @Override
         public String op() {
@@ -37,21 +30,15 @@ public sealed interface Expr {
         }
 
         @Override
-        public Expr withNested(Expr nested) {
-            return new Neg(nested);
+        public Expr withChild(Expr child) {
+            return new Neg(child);
         }
     }
 
-    public sealed interface Binary extends OpExpr permits Add, Sub, Mul, Div {
-
-        Expr left();
-
-        Expr right();
-
-        Expr withNested(Expr left, Expr right);
+    public sealed interface BinOpExpr extends OpExpr, Tree.Binary<Expr> permits Add, Sub, Mul, Div {
     }
 
-    public record Add(Expr left, Expr right) implements Binary {
+    public record Add(Expr left, Expr right) implements BinOpExpr {
 
         @Override
         public String op() {
@@ -59,12 +46,12 @@ public sealed interface Expr {
         }
 
         @Override
-        public Expr withNested(Expr left, Expr right) {
+        public Expr withChildren(Expr left, Expr right) {
             return new Add(left, right);
         }
     }
 
-    public record Sub(Expr left, Expr right) implements Binary {
+    public record Sub(Expr left, Expr right) implements BinOpExpr {
 
         @Override
         public String op() {
@@ -72,12 +59,12 @@ public sealed interface Expr {
         }
 
         @Override
-        public Expr withNested(Expr left, Expr right) {
+        public Expr withChildren(Expr left, Expr right) {
             return new Sub(left, right);
         }
     }
 
-    public record Mul(Expr left, Expr right) implements Binary {
+    public record Mul(Expr left, Expr right) implements BinOpExpr {
 
         @Override
         public String op() {
@@ -85,12 +72,12 @@ public sealed interface Expr {
         }
 
         @Override
-        public Expr withNested(Expr left, Expr right) {
+        public Expr withChildren(Expr left, Expr right) {
             return new Mul(left, right);
         }
     }
 
-    public record Div(Expr left, Expr right) implements Binary {
+    public record Div(Expr left, Expr right) implements BinOpExpr {
 
         @Override
         public String op() {
@@ -98,7 +85,7 @@ public sealed interface Expr {
         }
 
         @Override
-        public Expr withNested(Expr left, Expr right) {
+        public Expr withChildren(Expr left, Expr right) {
             return new Div(left, right);
         }
     }
@@ -130,28 +117,9 @@ public sealed interface Expr {
                 Integer.toString(e.value());
             case Neg(var e) ->
                 STR."-\{e.format()}";
-            case Binary bin ->
+            case BinOpExpr bin ->
                 STR."(\{bin.left().format()} \{bin.op()} \{bin.right().format()})";
         };
-    }
-
-    default Stream<Expr> included() {
-        return Stream.of(this).mapMulti(Expr::forEachIncluded);
-    }
-
-    default void forEachIncluded(final Consumer<Expr> action) {
-        action.accept(this);
-        switch (this) {
-            case Unary self -> {
-                self.nested().forEachIncluded(action);
-            }
-            case Binary self -> {
-                self.left().forEachIncluded(action);
-                self.right().forEachIncluded(action);
-            }
-            default -> {
-            }
-        }
     }
 
     default long size() {

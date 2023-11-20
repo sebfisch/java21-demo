@@ -1,15 +1,17 @@
 package sebfisch.expressions;
 
+import sebfisch.util.Tree;
+
 public final class Simplification {
 
     private Simplification() {
     }
 
-    public static final Transform TRANSFORM
-            = Transform.combineAll(
+    public static final Tree.Transform<Expr> OF_EXPR
+            = Tree.Transform.inOrder(
                     Simplification::normalizeConst,
                     Simplification::cancelMul
-            ).recursively();
+            ).everywhere();
 
     private static Expr normalizeConst(Expr expr) {
         return switch (expr) {
@@ -25,7 +27,7 @@ public final class Simplification {
 
     private static Expr cancelMul(Expr expr) {
         return switch (expr) {
-            case Expr.Mul e when e.left() == Expr.Small.ZERO || e.right() == Expr.Small.ZERO ->
+            case Expr.Mul e when e.children().anyMatch(Expr.Small.ZERO::equals) ->
                 Expr.Small.ZERO;
             default ->
                 expr;
