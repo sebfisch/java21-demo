@@ -25,7 +25,7 @@ public sealed interface Expr {
 
         Expr child();
 
-        Expr withChild(Expr nested);
+        Expr withChild(Expr child);
     }
 
     public record Neg(Expr child) implements Unary {

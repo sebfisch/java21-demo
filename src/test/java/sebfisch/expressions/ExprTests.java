@@ -59,13 +59,23 @@ class ExprTests {
     }
 
     @Test
+    public void testTraversingChildren() {
+        final Expr expr = new Expr.Add(new Expr.Neg(Expr.Small.ONE), new Expr.Num(2));
+        AtomicInteger counter = new AtomicInteger(0);
+        expr.forEachChild(e -> {
+            counter.incrementAndGet();
+        });
+        assertEquals(2, counter.intValue());
+    }
+
+    @Test
     public void testTraversingSimpleExpression() {
-        final Expr expr = new Expr.Add(Expr.Small.ONE, new Expr.Num(2));
+        final Expr expr = new Expr.Add(new Expr.Neg(Expr.Small.ONE), new Expr.Num(2));
         AtomicInteger counter = new AtomicInteger(0);
         expr.forEachIncluded(e -> {
             counter.incrementAndGet();
         });
-        assertEquals(3, counter.intValue());
+        assertEquals(4, counter.intValue());
     }
 
     @Test

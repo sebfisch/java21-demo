@@ -6,7 +6,7 @@ public final class Simplification {
     }
 
     public static final Transform TRANSFORM
-            = Transform.combineAll(
+            = Transform.inOrder(
                     Simplification::normalizeConst,
                     Simplification::cancelMul
             ).everywhere();
@@ -25,7 +25,7 @@ public final class Simplification {
 
     private static Expr cancelMul(Expr expr) {
         return switch (expr) {
-            case Expr.Mul e when e.left() == Expr.Small.ZERO || e.right() == Expr.Small.ZERO ->
+            case Expr.Mul e when e.children().anyMatch(Expr.Small.ZERO::equals) ->
                 Expr.Small.ZERO;
             default ->
                 expr;

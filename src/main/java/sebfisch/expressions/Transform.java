@@ -8,11 +8,11 @@ public interface Transform extends UnaryOperator<Expr> {
 
     static final Transform NO_CHANGE = e -> e;
 
-    static Transform combineAll(Transform... transforms) {
-        return Stream.of(transforms).reduce(NO_CHANGE, Transform::combine);
+    static Transform inOrder(Transform... transforms) {
+        return Stream.of(transforms).reduce(NO_CHANGE, Transform::before);
     }
 
-    default Transform combine(Transform that) {
+    default Transform before(Transform that) {
         return this.andThen(that)::apply;
     }
 
