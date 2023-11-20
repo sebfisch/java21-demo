@@ -8,7 +8,7 @@ public final class Simplification {
     }
 
     public static final Tree.Transform<Expr> OF_EXPR
-            = Tree.Transform.inOrder(
+            = Tree.Transform.of(
                     Simplification::normalizeConst,
                     Simplification::removeNeg,
                     Simplification::removeNeutral,
