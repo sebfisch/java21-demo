@@ -55,7 +55,7 @@ public interface Tree<T extends Tree<T>> {
 
         @SafeVarargs
         @SuppressWarnings("varargs")
-        static <T extends Tree<T>> Transform<T> inOrder(Transform<T>... transforms) {
+        static <T extends Tree<T>> Transform<T> of(Transform<T>... transforms) {
             final Transform<T> noChange = tree -> tree;
             return Stream.of(transforms).reduce(noChange, Transform::before);
         }
