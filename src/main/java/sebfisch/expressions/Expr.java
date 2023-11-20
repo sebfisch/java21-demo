@@ -1,9 +1,8 @@
 package sebfisch.expressions;
 
-import java.util.function.Consumer;
-import java.util.stream.Stream;
+import sebfisch.util.Tree;
 
-public sealed interface Expr {
+public sealed interface Expr extends Tree<Expr> {
 
     public sealed interface Const extends Expr permits Small, Num {
     }
@@ -16,19 +15,12 @@ public sealed interface Expr {
 
     }
 
-    public sealed interface OpExpr extends Expr permits Unary, Binary {
+    public sealed interface OpExpr extends Expr permits Neg, BinOpExpr {
 
         String op();
     }
 
-    public sealed interface Unary extends OpExpr permits Neg {
-
-        Expr child();
-
-        Expr withChild(Expr child);
-    }
-
-    public record Neg(Expr child) implements Unary {
+    public record Neg(Expr child) implements OpExpr, Tree.Unary<Expr> {
 
         @Override
         public String op() {
@@ -41,16 +33,10 @@ public sealed interface Expr {
         }
     }
 
-    public sealed interface Binary extends OpExpr permits Add, Sub, Mul, Div {
-
-        Expr left();
-
-        Expr right();
-
-        Expr withChildren(Expr left, Expr right);
+    public sealed interface BinOpExpr extends OpExpr, Tree.Binary<Expr> permits Add, Sub, Mul, Div {
     }
 
-    public record Add(Expr left, Expr right) implements Binary {
+    public record Add(Expr left, Expr right) implements BinOpExpr {
 
         @Override
         public String op() {
@@ -63,7 +49,7 @@ public sealed interface Expr {
         }
     }
 
-    public record Sub(Expr left, Expr right) implements Binary {
+    public record Sub(Expr left, Expr right) implements BinOpExpr {
 
         @Override
         public String op() {
@@ -76,7 +62,7 @@ public sealed interface Expr {
         }
     }
 
-    public record Mul(Expr left, Expr right) implements Binary {
+    public record Mul(Expr left, Expr right) implements BinOpExpr {
 
         @Override
         public String op() {
@@ -89,7 +75,7 @@ public sealed interface Expr {
         }
     }
 
-    public record Div(Expr left, Expr right) implements Binary {
+    public record Div(Expr left, Expr right) implements BinOpExpr {
 
         @Override
         public String op() {
@@ -129,36 +115,9 @@ public sealed interface Expr {
                 Integer.toString(e.value());
             case Neg(var e) ->
                 "-%s".formatted(e.format());
-            case Binary bin ->
+            case BinOpExpr bin ->
                 "(%s %s %s)".formatted(bin.left().format(), bin.op(), bin.right().format());
         };
-    }
-
-    default void forEachChild(final Consumer<Expr> action) {
-        switch (this) {
-            case Unary self -> {
-                action.accept(self.child());
-            }
-            case Binary self -> {
-                action.accept(self.left());
-                action.accept(self.right());
-            }
-            case Const unused -> {
-            }
-        }
-    }
-
-    default Stream<Expr> children() {
-        return Stream.of(this).mapMulti(Expr::forEachChild);
-    }
-
-    default void forEachIncluded(final Consumer<Expr> action) {
-        action.accept(this);
-        forEachChild(child -> child.forEachIncluded(action));
-    }
-
-    default Stream<Expr> included() {
-        return Stream.of(this).mapMulti(Expr::forEachIncluded);
     }
 
     default long size() {

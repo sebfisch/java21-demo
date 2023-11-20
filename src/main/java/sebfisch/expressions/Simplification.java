@@ -1,12 +1,14 @@
 package sebfisch.expressions;
 
+import sebfisch.util.Tree;
+
 public final class Simplification {
 
     private Simplification() {
     }
 
-    public static final Transform TRANSFORM
-            = Transform.inOrder(
+    public static final Tree.Transform<Expr> OF_EXPR
+            = Tree.Transform.inOrder(
                     Simplification::normalizeConst,
                     Simplification::cancelMul
             ).everywhere();
