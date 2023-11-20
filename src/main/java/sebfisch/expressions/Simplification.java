@@ -67,9 +67,9 @@ public final class Simplification {
     }
 
     public static final Tree.Transform<BoolExpr> OF_BOOL_EXPR = Tree.Transform.of(
+            Simplification::withoutDoubleNot,
             Simplification::withoutOr, // might introduce double negation on grandchildren
-            Tree.Transform.of(Simplification::withoutDoubleNot).onEveryChild().onEveryChild(),
-            Simplification::withoutDoubleNot
+            Tree.Transform.of(Simplification::withoutDoubleNot).onEveryChild().onEveryChild()
     ).everywhere();
 
     private static BoolExpr withoutDoubleNot(BoolExpr be) {
