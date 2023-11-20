@@ -65,4 +65,28 @@ public final class Simplification {
                 expr;
         };
     }
+
+    public static final Tree.Transform<BoolExpr> OF_BOOL_EXPR = Tree.Transform.inOrder(
+            Simplification::withoutOr, // might introduce double negation on grandchildren
+            Tree.Transform.inOrder(Simplification::withoutDoubleNot).onEveryChild().onEveryChild(),
+            Simplification::withoutDoubleNot
+    ).everywhere();
+
+    private static BoolExpr withoutDoubleNot(BoolExpr be) {
+        return switch (be) {
+            case BoolExpr.Not(BoolExpr.Not(var b)) ->
+                b;
+            default ->
+                be;
+        };
+    }
+
+    private static BoolExpr withoutOr(BoolExpr be) {
+        return switch (be) {
+            case BoolExpr.Or(var l, var r) ->
+                new BoolExpr.Not(new BoolExpr.And(new BoolExpr.Not(l), new BoolExpr.Not(r)));
+            default ->
+                be;
+        };
+    }
 }

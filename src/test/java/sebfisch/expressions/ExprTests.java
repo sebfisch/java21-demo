@@ -174,6 +174,6 @@ class ExprTests {
     @ParameterizedTest
     @MethodSource("safeRandomExpression")
     public void simplifiedHasSameResult(Expr expr) {
-        assertEquals(expr.value(), Simplification.TRANSFORM.apply(expr).value());
+        assertEquals(expr.value(), Simplification.OF_EXPR.apply(expr).value());
     }
 }
