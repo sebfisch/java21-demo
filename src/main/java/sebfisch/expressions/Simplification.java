@@ -9,7 +9,7 @@ public final class Simplification {
             = Transform.combineAll(
                     Simplification::normalizeConst,
                     Simplification::cancelMul
-            ).recursively();
+            ).everywhere();
 
     private static Expr normalizeConst(Expr expr) {
         return switch (expr) {

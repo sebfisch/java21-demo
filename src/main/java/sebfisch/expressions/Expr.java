@@ -23,12 +23,12 @@ public sealed interface Expr {
 
     public sealed interface Unary extends OpExpr permits Neg {
 
-        Expr nested();
+        Expr child();
 
-        Expr withNested(Expr nested);
+        Expr withChild(Expr nested);
     }
 
-    public record Neg(Expr nested) implements Unary {
+    public record Neg(Expr child) implements Unary {
 
         @Override
         public String op() {
@@ -36,8 +36,8 @@ public sealed interface Expr {
         }
 
         @Override
-        public Expr withNested(Expr nested) {
-            return new Neg(nested);
+        public Expr withChild(Expr child) {
+            return new Neg(child);
         }
     }
 
@@ -47,7 +47,7 @@ public sealed interface Expr {
 
         Expr right();
 
-        Expr withNested(Expr left, Expr right);
+        Expr withChildren(Expr left, Expr right);
     }
 
     public record Add(Expr left, Expr right) implements Binary {
@@ -58,7 +58,7 @@ public sealed interface Expr {
         }
 
         @Override
-        public Expr withNested(Expr left, Expr right) {
+        public Expr withChildren(Expr left, Expr right) {
             return new Add(left, right);
         }
     }
@@ -71,7 +71,7 @@ public sealed interface Expr {
         }
 
         @Override
-        public Expr withNested(Expr left, Expr right) {
+        public Expr withChildren(Expr left, Expr right) {
             return new Sub(left, right);
         }
     }
@@ -84,7 +84,7 @@ public sealed interface Expr {
         }
 
         @Override
-        public Expr withNested(Expr left, Expr right) {
+        public Expr withChildren(Expr left, Expr right) {
             return new Mul(left, right);
         }
     }
@@ -97,7 +97,7 @@ public sealed interface Expr {
         }
 
         @Override
-        public Expr withNested(Expr left, Expr right) {
+        public Expr withChildren(Expr left, Expr right) {
             return new Div(left, right);
         }
     }
@@ -134,23 +134,31 @@ public sealed interface Expr {
         };
     }
 
-    default Stream<Expr> included() {
-        return Stream.of(this).mapMulti(Expr::forEachIncluded);
+    default void forEachChild(final Consumer<Expr> action) {
+        switch (this) {
+            case Unary self -> {
+                action.accept(self.child());
+            }
+            case Binary self -> {
+                action.accept(self.left());
+                action.accept(self.right());
+            }
+            case Const unused -> {
+            }
+        }
+    }
+
+    default Stream<Expr> children() {
+        return Stream.of(this).mapMulti(Expr::forEachChild);
     }
 
     default void forEachIncluded(final Consumer<Expr> action) {
         action.accept(this);
-        switch (this) {
-            case Unary self -> {
-                self.nested().forEachIncluded(action);
-            }
-            case Binary self -> {
-                self.left().forEachIncluded(action);
-                self.right().forEachIncluded(action);
-            }
-            default -> {
-            }
-        }
+        forEachChild(child -> child.forEachIncluded(action));
+    }
+
+    default Stream<Expr> included() {
+        return Stream.of(this).mapMulti(Expr::forEachIncluded);
     }
 
     default long size() {

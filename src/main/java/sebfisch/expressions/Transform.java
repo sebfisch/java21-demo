@@ -16,14 +16,18 @@ public interface Transform extends UnaryOperator<Expr> {
         return this.andThen(that)::apply;
     }
 
-    default Transform recursively() {
-        return expr -> apply(switch (expr) {
+    default Transform onEveryChild() {
+        return expr -> switch (expr) {
             case Expr.Unary e ->
-                e.withNested(recursively().apply(e.nested()));
+                e.withChild(apply(e.child()));
             case Expr.Binary e ->
-                e.withNested(recursively().apply(e.left()), recursively().apply(e.right()));
+                e.withChildren(apply(e.left()), apply(e.right()));
             case Expr.Const e ->
                 e;
-        });
+        };
+    }
+
+    default Transform everywhere() {
+        return expr -> apply(everywhere().onEveryChild().apply(expr));
     }
 }
