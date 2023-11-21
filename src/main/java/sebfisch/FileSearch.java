@@ -29,7 +29,7 @@ public class FileSearch {
                     .mapMulti(List::forEach)
                     .forEach(System.out::println);
         } catch (IOException e) {
-            System.err.println(e.getMessage());
+            System.err.println(e);
         }
     }
 
