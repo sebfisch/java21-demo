@@ -1,4 +1,4 @@
-package sebfisch.util;
+package sebfisch.echo;
 
 import java.util.LinkedList;
 import java.util.SequencedCollection;
