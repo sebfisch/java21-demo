@@ -9,7 +9,7 @@ public final class Simpler {
         return Transform.all(expr, Transform.of(
                 Simpler::normalizeConst,
                 Simpler::removeNeg,
-                Simpler::removeNeutral,
+                Simpler::removeId,
                 Simpler::cancelMul
         ));
     }
@@ -39,18 +39,16 @@ public final class Simpler {
         };
     }
 
-    private static Expr removeNeutral(Expr expr) {
+    private static Expr removeId(Expr expr) {
         return switch (expr) {
             case Expr.Add(var l, var r) when l == Expr.Small.ZERO ->
                 r;
             case Expr.Add(var l, var r) when r == Expr.Small.ZERO ->
                 l;
-            case Expr.Sub(var l, var r) when l == Expr.Small.ZERO ->
-                new Expr.Neg(r);
-            case Expr.Sub(var l, var r) when r == Expr.Small.ZERO ->
-                l;
             case Expr.Mul(var l, var r) when l == Expr.Small.ONE ->
                 r;
+            case Expr.Mul(var l, var r) when r == Expr.Small.ONE ->
+                l;
             default ->
                 expr;
         };

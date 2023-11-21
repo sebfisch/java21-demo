@@ -126,8 +126,7 @@ class ExprTests {
     @Test
     void testTraversingConstants() {
         final Expr expr = new Expr.Add(Expr.Small.ONE, new Expr.Num(2));
-        int[] constants = expr.constants().toArray();
-        assertArrayEquals(new int[]{1, 2}, constants);
+        assertArrayEquals(new int[]{1, 2}, expr.constants().toArray());
     }
 
     @Test
