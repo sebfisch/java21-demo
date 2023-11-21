@@ -1,8 +1,9 @@
 package sebfisch.expressions;
 
-import sebfisch.util.Tree;
+import sebfisch.util.traversal.Query;
+import sebfisch.util.traversal.Rec;
 
-public sealed interface Expr extends Tree<Expr> {
+public sealed interface Expr extends Rec<Expr> {
 
     public sealed interface Const extends Expr permits Small, Num {
     }
@@ -15,12 +16,12 @@ public sealed interface Expr extends Tree<Expr> {
 
     }
 
-    public sealed interface OpExpr extends Expr permits Neg, BinOpExpr {
+    public sealed interface OpExpr extends Expr permits Neg, Bin {
 
         String op();
     }
 
-    public record Neg(Expr child) implements OpExpr, Tree.Unary<Expr> {
+    public record Neg(Expr child) implements OpExpr, Rec.One<Expr> {
 
         @Override
         public String op() {
@@ -28,15 +29,15 @@ public sealed interface Expr extends Tree<Expr> {
         }
 
         @Override
-        public Expr withChild(Expr child) {
+        public Neg withChild(Expr child) {
             return new Neg(child);
         }
     }
 
-    public sealed interface BinOpExpr extends OpExpr, Tree.Binary<Expr> permits Add, Sub, Mul, Div {
+    public sealed interface Bin extends OpExpr, Rec.Two<Expr> permits Add, Sub, Mul, Div {
     }
 
-    public record Add(Expr left, Expr right) implements BinOpExpr {
+    public record Add(Expr left, Expr right) implements Bin {
 
         @Override
         public String op() {
@@ -44,12 +45,12 @@ public sealed interface Expr extends Tree<Expr> {
         }
 
         @Override
-        public Expr withChildren(Expr left, Expr right) {
+        public Add withChildren(Expr left, Expr right) {
             return new Add(left, right);
         }
     }
 
-    public record Sub(Expr left, Expr right) implements BinOpExpr {
+    public record Sub(Expr left, Expr right) implements Bin {
 
         @Override
         public String op() {
@@ -57,12 +58,12 @@ public sealed interface Expr extends Tree<Expr> {
         }
 
         @Override
-        public Expr withChildren(Expr left, Expr right) {
+        public Sub withChildren(Expr left, Expr right) {
             return new Sub(left, right);
         }
     }
 
-    public record Mul(Expr left, Expr right) implements BinOpExpr {
+    public record Mul(Expr left, Expr right) implements Bin {
 
         @Override
         public String op() {
@@ -70,12 +71,12 @@ public sealed interface Expr extends Tree<Expr> {
         }
 
         @Override
-        public Expr withChildren(Expr left, Expr right) {
+        public Mul withChildren(Expr left, Expr right) {
             return new Mul(left, right);
         }
     }
 
-    public record Div(Expr left, Expr right) implements BinOpExpr {
+    public record Div(Expr left, Expr right) implements Bin {
 
         @Override
         public String op() {
@@ -83,7 +84,7 @@ public sealed interface Expr extends Tree<Expr> {
         }
 
         @Override
-        public Expr withChildren(Expr left, Expr right) {
+        public Div withChildren(Expr left, Expr right) {
             return new Div(left, right);
         }
     }
@@ -115,12 +116,12 @@ public sealed interface Expr extends Tree<Expr> {
                 Integer.toString(e.value());
             case Neg(var e) ->
                 "-%s".formatted(e.format());
-            case BinOpExpr bin ->
+            case Bin bin ->
                 "(%s %s %s)".formatted(bin.left().format(), bin.op(), bin.right().format());
         };
     }
 
     default long size() {
-        return included().filter(e -> e instanceof OpExpr).count();
+        return Query.all(this).filter(e -> e instanceof OpExpr).count();
     }
 }
