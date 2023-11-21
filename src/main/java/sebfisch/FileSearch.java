@@ -8,8 +8,6 @@ import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
-import sebfisch.util.Partial;
-
 public class FileSearch {
 
     public static void main(final String[] args) {
@@ -18,16 +16,28 @@ public class FileSearch {
         final Predicate<String> isMatching = Pattern.compile(regExp).asPredicate();
 
         try (Stream<Path> files = Files.walk(folderPath).filter(Files::isRegularFile)) {
-            files
-                    .map(Path::toAbsolutePath)
-                    .map(filePath -> FileMatches.from(filePath, isMatching))
-                    .peek(partial -> partial.ifFailure(System.err::println))
-                    .mapMulti(Partial<FileMatches, IOException>::ifSuccess)
-                    .filter(matches -> !matches.matchingLines().isEmpty())
-                    .peek(matches -> System.out.println(matches.filePath()))
-                    .map(FileMatches::matchingLines)
-                    .mapMulti(List::forEach)
-                    .forEach(System.out::println);
+            final Iterable<Path> iterableFiles = () -> files.iterator();
+            for (final Path file : iterableFiles) {
+                final Path filePath = file.toAbsolutePath();
+
+                final FileMatches matches;
+                try {
+                    matches = FileMatches.from(filePath, isMatching);
+                } catch (IOException e) {
+                    System.err.println(e);
+                    continue;
+                }
+
+                if (matches.matchingLines().isEmpty()) {
+                    continue;
+                }
+
+                System.out.println(matches.filePath());
+
+                for (final String line : matches.matchingLines()) {
+                    System.out.println(line);
+                }
+            }
         } catch (IOException e) {
             System.err.println(e);
         }
@@ -35,12 +45,10 @@ public class FileSearch {
 
     private record FileMatches(Path filePath, List<String> matchingLines) {
 
-        static Partial<FileMatches, IOException> from(Path filePath, Predicate<String> isMatching) {
+        static FileMatches from(Path filePath, Predicate<String> isMatching) throws IOException {
             try (Stream<String> lines = Files.lines(filePath)) {
                 List<String> matchingLines = lines.filter(isMatching).toList();
-                return new Partial.Success<>(new FileMatches(filePath, matchingLines));
-            } catch (IOException e) {
-                return new Partial.Failure<>(e);
+                return new FileMatches(filePath, matchingLines);
             }
         }
     }
