@@ -6,8 +6,7 @@ import sebfisch.util.Partial;
 import sebfisch.util.traversal.Query;
 import sebfisch.util.traversal.Rec;
 
-pub
-lic sealed interface Expr extends Rec<Expr> {
+public sealed interface Expr extends Rec<Expr> {
 
     public sealed interface Const extends Expr permits Small, Num {
     }
@@ -99,17 +98,17 @@ lic sealed interface Expr extends Rec<Expr> {
                 0;
             case Small.ONE ->
                 1;
-            case Num(var  ) ->
+            case Num(var i) ->
                 i;
-            case Neg(var  ) ->
+            case Neg(var e) ->
                 Math.negateExact(e.value());
-            case Add(var  , var  ) ->
+            case Add(var l, var r) ->
                 Math.addExact(l.value(), r.value());
-            case Sub(var  , var  ) ->
+            case Sub(var l, var r) ->
                 Math.subtractExact(l.value(), r.value());
-            case Mul(var  , var  ) ->
+            case Mul(var l, var r) ->
                 Math.multiplyExact(l.value(), r.value());
-            case Div(var  , var  ) ->
+            case Div(var l, var r) ->
                 Math.divideExact(l.value(), r.value());
         };
     }
@@ -126,7 +125,7 @@ lic sealed interface Expr extends Rec<Expr> {
         return switch (this) {
             case Const e ->
                 Integer.toString(e.value());
-            case Neg(var  ) ->
+            case Neg(var e) ->
                 "-%s".formatted(e.format());
             case Bin bin ->
                 "(%s %s %s)".formatted(bin.left().format(), bin.op(), bin.right().format());

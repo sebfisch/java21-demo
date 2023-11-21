@@ -1,14 +1,15 @@
 package sebfisch.expressions;
 
-import sebfisch.util.Tree;
+import sebfisch.util.traversal.Query;
+import sebfisch.util.traversal.Rec;
 
-public sealed interface BoolExpr extends Tree<BoolExpr> {
+public sealed interface BoolExpr extends Rec<BoolExpr> {
 
     public enum Const implements BoolExpr {
         TRUE, FALSE
     }
 
-    public record Not(BoolExpr child) implements BoolExpr, Tree.Unary<BoolExpr> {
+    public record Not(BoolExpr child) implements BoolExpr, Rec.One<BoolExpr> {
 
         @Override
         public BoolExpr withChild(BoolExpr child) {
@@ -16,7 +17,7 @@ public sealed interface BoolExpr extends Tree<BoolExpr> {
         }
     }
 
-    public sealed interface Bin extends BoolExpr, Tree.Binary<BoolExpr> permits And, Or {
+    public sealed interface Bin extends BoolExpr, Rec.Two<BoolExpr> permits And, Or {
     }
 
     public record And(BoolExpr left, BoolExpr right) implements Bin {
@@ -36,10 +37,10 @@ public sealed interface BoolExpr extends Tree<BoolExpr> {
     }
 
     default boolean hasOr() {
-        return included().filter(e -> e instanceof Or).count() > 0;
+        return Query.all(this).filter(e -> e instanceof Or).count() > 0;
     }
 
     default boolean hasDoubleNot() {
-        return included().filter(e -> e instanceof Not(Not(var unused))).count() > 0;
+        return Query.all(this).filter(e -> e instanceof Not(Not(var unused))).count() > 0;
     }
 }
