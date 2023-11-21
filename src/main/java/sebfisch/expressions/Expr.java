@@ -24,7 +24,7 @@ public sealed interface Expr extends Rec<Expr> {
         String op();
     }
 
-    public record Neg(Expr child) implements OpExpr, Rec.One<Expr> {
+    public record Neg(Expr child) implements OpExpr, Rec.Unary<Expr> {
 
         @Override
         public String op() {
@@ -37,7 +37,7 @@ public sealed interface Expr extends Rec<Expr> {
         }
     }
 
-    public sealed interface Bin extends OpExpr, Rec.Two<Expr> permits Add, Sub, Mul, Div {
+    public sealed interface Bin extends OpExpr, Rec.Binary<Expr> permits Add, Sub, Mul, Div {
     }
 
     public record Add(Expr left, Expr right) implements Bin {

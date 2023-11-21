@@ -12,6 +12,8 @@ public interface Transform<C> extends UnaryOperator<C> {
                 p.withChild(op.apply(p.child()));
             case Has.Two<P, C> p ->
                 p.withChildren(op.apply(p.left()), op.apply(p.right()));
+            case Has.Any<P, C> p ->
+                p.withChildren(p.children().stream().map(op).toList());
             default ->
                 parent;
         };
