@@ -136,7 +136,7 @@ public sealed interface Expr extends Rec<Expr> {
         return Query.all(this).filter(e -> e instanceof OpExpr).count();
     }
 
-    default IntStream includedConstants() {
+    default IntStream constants() {
         return Query.all(this)
                 .filter(e -> e instanceof Expr.Const)
                 .mapToInt(Expr::value);
