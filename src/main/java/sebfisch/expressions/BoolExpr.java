@@ -9,7 +9,7 @@ public sealed interface BoolExpr extends Rec<BoolExpr> {
         TRUE, FALSE
     }
 
-    public record Not(BoolExpr child) implements BoolExpr, Rec.One<BoolExpr> {
+    public record Not(BoolExpr child) implements BoolExpr, Rec.Unary<BoolExpr> {
 
         @Override
         public BoolExpr withChild(BoolExpr child) {
@@ -17,7 +17,7 @@ public sealed interface BoolExpr extends Rec<BoolExpr> {
         }
     }
 
-    public sealed interface Bin extends BoolExpr, Rec.Two<BoolExpr> permits And, Or {
+    public sealed interface Bin extends BoolExpr, Rec.Binary<BoolExpr> permits And, Or {
     }
 
     public record And(BoolExpr left, BoolExpr right) implements Bin {
