@@ -66,12 +66,10 @@ public final class Simpler {
     }
 
     public static BoolExpr boolExpr(BoolExpr be) {
-        return Transform.all(be, Transform.inOrder(
+        return Transform.all(be, Transform.of(
                 Simpler::withoutDoubleNot,
                 Simpler::withoutOr, // may introduce double negation on grandchildren
-                parent
-                -> Transform.children(parent, child
-                        -> Transform.children(child, Simpler::withoutDoubleNot))
+                Transform.of(Simpler::withoutDoubleNot).<BoolExpr>atChildren().atChildren()
         ));
     }
 
