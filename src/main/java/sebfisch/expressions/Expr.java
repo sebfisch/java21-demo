@@ -121,7 +121,7 @@ public sealed interface Expr extends Rec<Expr> {
         };
     }
 
-    default long size() {
+    default long opCount() {
         return Query.all(this).filter(e -> e instanceof OpExpr).count();
     }
 }
