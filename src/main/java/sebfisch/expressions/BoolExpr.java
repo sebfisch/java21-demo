@@ -5,11 +5,11 @@ import sebfisch.util.traversal.Rec;
 
 public sealed interface BoolExpr extends Rec<BoolExpr> {
 
-    public enum Const implements BoolExpr {
+    enum Const implements BoolExpr {
         TRUE, FALSE
     }
 
-    public record Not(BoolExpr child) implements BoolExpr, Rec.Unary<BoolExpr> {
+    record Not(BoolExpr child) implements BoolExpr, Rec.Unary<BoolExpr> {
 
         @Override
         public BoolExpr withChild(BoolExpr child) {
@@ -17,10 +17,10 @@ public sealed interface BoolExpr extends Rec<BoolExpr> {
         }
     }
 
-    public sealed interface Bin extends BoolExpr, Rec.Binary<BoolExpr> permits And, Or {
+    sealed interface Bin extends BoolExpr, Rec.Binary<BoolExpr> permits And, Or {
     }
 
-    public record And(BoolExpr left, BoolExpr right) implements Bin {
+    record And(BoolExpr left, BoolExpr right) implements Bin {
 
         @Override
         public BoolExpr withChildren(BoolExpr left, BoolExpr right) {
@@ -28,7 +28,7 @@ public sealed interface BoolExpr extends Rec<BoolExpr> {
         }
     }
 
-    public record Or(BoolExpr left, BoolExpr right) implements Bin {
+    record Or(BoolExpr left, BoolExpr right) implements Bin {
 
         @Override
         public BoolExpr withChildren(BoolExpr left, BoolExpr right) {
