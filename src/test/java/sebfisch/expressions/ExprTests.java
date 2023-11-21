@@ -16,25 +16,25 @@ import sebfisch.util.traversal.Traverse;
 class ExprTests {
 
     @Test
-    public void testEvaluatingSimpleExpression() {
+    void testEvaluatingSimpleExpression() {
         final Expr expr = new Expr.Add(Expr.Small.ONE, new Expr.Num(2));
         assertEquals(3, expr.value());
     }
 
     @Test
-    public void testDivisionByZero() {
+    void testDivisionByZero() {
         final Expr expr = new Expr.Div(Expr.Small.ONE, Expr.Small.ZERO);
         assertThrows(ArithmeticException.class, () -> expr.value());
     }
 
     @Test
-    public void testIntOverflow() {
+    void testIntOverflow() {
         final Expr expr = new Expr.Add(new Expr.Num(Integer.MAX_VALUE), Expr.Small.ONE);
         assertEquals(Integer.MIN_VALUE, expr.value());
     }
 
     @Test
-    public void testDivOverflow() {
+    void testDivOverflow() {
         final Expr expr = new Expr.Div(
                 new Expr.Num(Integer.MIN_VALUE),
                 new Expr.Neg(Expr.Small.ONE)
@@ -43,27 +43,27 @@ class ExprTests {
     }
 
     @Test
-    public void testFormattingSimpleExpression() {
+    void testFormattingSimpleExpression() {
         final Expr expr = new Expr.Add(Expr.Small.ONE, new Expr.Num(2));
         final String string = "(1 + 2)";
         assertEquals(string, expr.format());
     }
 
     @Test
-    public void testFormattingParsedExpr() {
+    void testFormattingParsedExpr() {
         final String string = "(1 + 2)";
         assertEquals(string, new Parser(string).parseExpression().format());
     }
 
     @Test
-    public void testParsingFormattedExpr() {
+    void testParsingFormattedExpr() {
         final Expr expr = EXPR
         ."(1 + 2)";
         assertEquals(expr, new Parser(expr.format()).parseExpression());
     }
 
     @Test
-    public void testTraversingChildren() {
+    void testTraversingChildren() {
         final Expr expr = new Expr.Add(new Expr.Neg(Expr.Small.ONE), new Expr.Num(2));
         AtomicInteger counter = new AtomicInteger(0);
         Traverse.children(expr, e -> {
@@ -73,7 +73,7 @@ class ExprTests {
     }
 
     @Test
-    public void testTraversingNested() {
+    void testTraversingNested() {
         final Expr expr = new Expr.Add(new Expr.Neg(Expr.Small.ONE), new Expr.Num(2));
         AtomicInteger counter = new AtomicInteger(0);
         Traverse.nested(expr, e -> {
@@ -83,7 +83,7 @@ class ExprTests {
     }
 
     @Test
-    public void testTraversingAll() {
+    void testTraversingAll() {
         final Expr expr = new Expr.Add(new Expr.Neg(Expr.Small.ONE), new Expr.Num(2));
         AtomicInteger counter = new AtomicInteger(0);
         Traverse.all(expr, e -> {
@@ -93,30 +93,30 @@ class ExprTests {
     }
 
     @Test
-    public void testSimplifyingSimpleExpression() {
+    void testSimplifyingSimpleExpression() {
         final Expr expr = new Expr.Mul(new Expr.Num(0), Expr.Small.ONE);
         assertEquals(Expr.Small.ZERO, Simpler.expression(expr));
     }
 
     private static final Generator GEN = new Generator();
 
-    public static Stream<Expr> randomExpression() {
+    static Stream<Expr> randomExpression() {
         return Stream.generate(GEN::randomExpr).limit(1000);
     }
 
     @ParameterizedTest
     @MethodSource("randomExpression")
-    public void parsedIsSameAsFormatted(Expr expr) {
+    void parsedIsSameAsFormatted(Expr expr) {
         assertEquals(expr, new Parser(expr.format()).parseExpression());
     }
 
-    public static Stream<String> randomExpressionString() {
+    static Stream<String> randomExpressionString() {
         return randomExpression().map(Expr::format);
     }
 
     @ParameterizedTest
     @MethodSource("randomExpressionString")
-    public void formattedIsSameAsParsed(String string) {
+    void formattedIsSameAsParsed(String string) {
         assertEquals(string, new Parser(string).parseExpression().format());
     }
 
@@ -124,7 +124,7 @@ class ExprTests {
 
     }
 
-    public static Stream<ExprWithSize> smallRandomExpression() {
+    static Stream<ExprWithSize> smallRandomExpression() {
         return IntStream.range(0, 100).boxed().mapMulti((size, addToStream) -> {
             IntStream.range(0, 10).forEach(unused -> {
                 addToStream.accept(new ExprWithSize(GEN.randomExpr(size), size));
@@ -134,7 +134,7 @@ class ExprTests {
 
     @ParameterizedTest
     @MethodSource("smallRandomExpression")
-    public void generatedHasCorrectSize(ExprWithSize e) {
+    void generatedHasCorrectSize(ExprWithSize e) {
         assertEquals(e.size(), e.expr().size());
     }
 }

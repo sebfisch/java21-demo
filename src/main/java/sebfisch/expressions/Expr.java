@@ -7,23 +7,23 @@ import sebfisch.util.traversal.Rec;
 
 public sealed interface Expr extends Rec<Expr> {
 
-    public sealed interface Const extends Expr permits Small, Num {
+    sealed interface Const extends Expr permits Small, Num {
     }
 
-    public enum Small implements Const {
+    enum Small implements Const {
         ZERO, ONE
     }
 
-    public record Num(int intValue) implements Const {
+    record Num(int intValue) implements Const {
 
     }
 
-    public sealed interface OpExpr extends Expr permits Neg, Bin {
+    sealed interface OpExpr extends Expr permits Neg, Bin {
 
         String op();
     }
 
-    public record Neg(Expr child) implements OpExpr, Rec.Unary<Expr> {
+    record Neg(Expr child) implements OpExpr, Rec.Unary<Expr> {
 
         @Override
         public String op() {
@@ -36,10 +36,10 @@ public sealed interface Expr extends Rec<Expr> {
         }
     }
 
-    public sealed interface Bin extends OpExpr, Rec.Binary<Expr> permits Add, Sub, Mul, Div {
+    sealed interface Bin extends OpExpr, Rec.Binary<Expr> permits Add, Sub, Mul, Div {
     }
 
-    public record Add(Expr left, Expr right) implements Bin {
+    record Add(Expr left, Expr right) implements Bin {
 
         @Override
         public String op() {
@@ -52,7 +52,7 @@ public sealed interface Expr extends Rec<Expr> {
         }
     }
 
-    public record Sub(Expr left, Expr right) implements Bin {
+    record Sub(Expr left, Expr right) implements Bin {
 
         @Override
         public String op() {
@@ -65,7 +65,7 @@ public sealed interface Expr extends Rec<Expr> {
         }
     }
 
-    public record Mul(Expr left, Expr right) implements Bin {
+    record Mul(Expr left, Expr right) implements Bin {
 
         @Override
         public String op() {
@@ -78,7 +78,7 @@ public sealed interface Expr extends Rec<Expr> {
         }
     }
 
-    public record Div(Expr left, Expr right) implements Bin {
+    record Div(Expr left, Expr right) implements Bin {
 
         @Override
         public String op() {

@@ -11,8 +11,6 @@ import java.net.Socket;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import sebfisch.util.RecentlyAccessed;
-
 public record Server(
         ServerSocket socket, ExecutorService executor, RecentlyAccessed<String> recentMessages)
         implements Closeable {

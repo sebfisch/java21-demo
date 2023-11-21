@@ -4,14 +4,14 @@ import java.util.List;
 
 public interface Has<P extends Has<P, C>, C> {
 
-    public interface One<P extends Has<P, C>, C> extends Has<P, C> {
+    interface One<P extends Has<P, C>, C> extends Has<P, C> {
 
         C child();
 
         P withChild(C child);
     }
 
-    public interface Two<P extends Has<P, C>, C> extends Has<P, C> {
+    interface Two<P extends Has<P, C>, C> extends Has<P, C> {
 
         C left();
 
@@ -20,7 +20,7 @@ public interface Has<P extends Has<P, C>, C> {
         P withChildren(C left, C right);
     }
 
-    public interface Any<P extends Has<P, C>, C> extends Has<P, C> {
+    interface Any<P extends Has<P, C>, C> extends Has<P, C> {
 
         List<C> children();
 
