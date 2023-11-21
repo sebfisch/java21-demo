@@ -13,6 +13,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import sebfisch.util.Partial;
+import sebfisch.util.traversal.Traverse;
 
 class ExprTests {
 
@@ -96,17 +97,27 @@ class ExprTests {
     public void testTraversingChildren() {
         final Expr expr = new Expr.Add(new Expr.Neg(Expr.Small.ONE), new Expr.Num(2));
         AtomicInteger counter = new AtomicInteger(0);
-        expr.forEachChild(e -> {
+        Traverse.children(expr, e -> {
             counter.incrementAndGet();
         });
         assertEquals(2, counter.intValue());
     }
 
     @Test
-    public void testTraversingSimpleExpression() {
+    public void testTraversingNested() {
         final Expr expr = new Expr.Add(new Expr.Neg(Expr.Small.ONE), new Expr.Num(2));
         AtomicInteger counter = new AtomicInteger(0);
-        expr.forEachIncluded(e -> {
+        Traverse.nested(expr, e -> {
+            counter.incrementAndGet();
+        });
+        assertEquals(3, counter.intValue());
+    }
+
+    @Test
+    public void testTraversingAll() {
+        final Expr expr = new Expr.Add(new Expr.Neg(Expr.Small.ONE), new Expr.Num(2));
+        AtomicInteger counter = new AtomicInteger(0);
+        Traverse.all(expr, e -> {
             counter.incrementAndGet();
         });
         assertEquals(4, counter.intValue());
@@ -122,7 +133,7 @@ class ExprTests {
     @Test
     public void testSimplifyingSimpleExpression() {
         final Expr expr = new Expr.Mul(new Expr.Num(0), Expr.Small.ONE);
-        assertEquals(Expr.Small.ZERO, Simplification.OF_EXPR.apply(expr));
+        assertEquals(Expr.Small.ZERO, Simpler.expression(expr));
     }
 
     private static final Generator GEN = new Generator();
@@ -174,6 +185,6 @@ class ExprTests {
     @ParameterizedTest
     @MethodSource("safeRandomExpression")
     public void simplifiedHasSameResult(Expr expr) {
-        assertEquals(expr.value(), Simplification.OF_EXPR.apply(expr).value());
+        assertEquals(expr.value(), Simpler.expression(expr).value());
     }
 }

@@ -1,19 +1,18 @@
 package sebfisch.expressions;
 
-import sebfisch.util.Tree;
+import sebfisch.util.traversal.Query;
+import sebfisch.util.traversal.Transform;
 
-public final class Simplification {
+public final class Simpler {
 
-    private Simplification() {
+    public static Expr expression(Expr expr) {
+        return Transform.all(expr, Transform.inOrder(
+                Simpler::normalizeConst,
+                Simpler::removeNeg,
+                Simpler::removeNeutral,
+                Simpler::cancelMul
+        ));
     }
-
-    public static final Tree.Transform<Expr> OF_EXPR
-            = Tree.Transform.of(
-                    Simplification::normalizeConst,
-                    Simplification::removeNeg,
-                    Simplification::removeNeutral,
-                    Simplification::cancelMul
-            ).everywhere();
 
     private static Expr normalizeConst(Expr expr) {
         return switch (expr) {
@@ -59,18 +58,22 @@ public final class Simplification {
 
     private static Expr cancelMul(Expr expr) {
         return switch (expr) {
-            case Expr.Mul e when e.children().anyMatch(Expr.Small.ZERO::equals) ->
+            case Expr.Mul e when Query.children(e).anyMatch(Expr.Small.ZERO::equals) ->
                 Expr.Small.ZERO;
             default ->
                 expr;
         };
     }
 
-    public static final Tree.Transform<BoolExpr> OF_BOOL_EXPR = Tree.Transform.of(
-            Simplification::withoutDoubleNot,
-            Simplification::withoutOr, // might introduce double negation on grandchildren
-            Tree.Transform.of(Simplification::withoutDoubleNot).onEveryChild().onEveryChild()
-    ).everywhere();
+    public static BoolExpr boolExpr(BoolExpr be) {
+        return Transform.all(be, Transform.inOrder(
+                Simpler::withoutDoubleNot,
+                Simpler::withoutOr, // may introduce double negation on grandchildren
+                parent
+                -> Transform.children(parent, child
+                        -> Transform.children(child, Simpler::withoutDoubleNot))
+        ));
+    }
 
     private static BoolExpr withoutDoubleNot(BoolExpr be) {
         return switch (be) {
