@@ -6,7 +6,7 @@ import sebfisch.util.traversal.Transform;
 public final class Simpler {
 
     public static Expr expression(Expr expr) {
-        return Transform.all(expr, Transform.inOrder(
+        return Transform.all(expr, Transform.of(
                 Simpler::normalizeConst,
                 Simpler::removeNeg,
                 Simpler::removeNeutral,
