@@ -1,4 +1,4 @@
-package sebfisch.util;
+package sebfisch.echo;
 
 import java.util.SequencedCollection;
 import java.util.concurrent.ConcurrentLinkedDeque;

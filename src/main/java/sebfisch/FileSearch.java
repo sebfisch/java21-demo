@@ -12,25 +12,13 @@ import sebfisch.util.Partial;
 
 public class FileSearch {
 
-    private record FileMatches(Path filePath, List<String> matchingLines) {
-
-        static Partial<FileMatches, IOException> from(Path filePath, Predicate<String> isMatching) {
-            try (Stream<String> lines = Files.lines(filePath)) {
-                List<String> matchingLines = lines.filter(isMatching).toList();
-                return new Partial.Success<>(new FileMatches(filePath, matchingLines));
-            } catch (IOException e) {
-                return new Partial.Failure<>(e);
-            }
-        }
-    }
-
     public static void main(final String[] args) {
-        final Path srcPath = Path.of(args[0]);
+        final Path folderPath = Path.of(args[0]);
         final String regExp = args[1];
         final Predicate<String> isMatching = Pattern.compile(regExp).asPredicate();
 
-        try (Stream<Path> srcFiles = Files.walk(srcPath).filter(Files::isRegularFile)) {
-            srcFiles
+        try (Stream<Path> files = Files.walk(folderPath).filter(Files::isRegularFile)) {
+            files
                     .map(Path::toAbsolutePath)
                     .map(filePath -> FileMatches.from(filePath, isMatching))
                     .peek(partial -> partial.ifFailure(System.err::println))
@@ -42,6 +30,18 @@ public class FileSearch {
                     .forEach(System.out::println);
         } catch (IOException e) {
             System.err.println(e.getMessage());
+        }
+    }
+
+    private record FileMatches(Path filePath, List<String> matchingLines) {
+
+        static Partial<FileMatches, IOException> from(Path filePath, Predicate<String> isMatching) {
+            try (Stream<String> lines = Files.lines(filePath)) {
+                List<String> matchingLines = lines.filter(isMatching).toList();
+                return new Partial.Success<>(new FileMatches(filePath, matchingLines));
+            } catch (IOException e) {
+                return new Partial.Failure<>(e);
+            }
         }
     }
 }
