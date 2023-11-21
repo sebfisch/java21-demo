@@ -173,7 +173,7 @@ class ExprTests {
     @ParameterizedTest
     @MethodSource("smallRandomExpression")
     void generatedHasCorrectSize(ExprWithSize e) {
-        assertEquals(e.size(), e.expr().size());
+        assertEquals(e.size(), e.expr().opCount());
     }
 
     static Stream<Expr> safeRandomExpression() {
