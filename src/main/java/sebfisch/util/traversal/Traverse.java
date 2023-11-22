@@ -4,7 +4,7 @@ import java.util.function.Consumer;
 
 public final class Traverse {
 
-    public static <P extends Has<P, C>, C> void children(Has<P, C> parent, Consumer<C> action) {
+    public static <P extends Has<P, C>, C> void children(P parent, Consumer<C> action) {
         switch (parent) {
             case Has.One<P, C> p ->
                 action.accept(p.child());
