@@ -2,5 +2,5 @@
 
 java \
   -cp target/classes \
-  -XX:StartFlightRecording:filename=$1.jfr,duration=60s \
+  -XX:StartFlightRecording:filename=$1.jfr \
   $1
