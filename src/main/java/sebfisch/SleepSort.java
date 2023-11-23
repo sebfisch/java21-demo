@@ -15,7 +15,7 @@ public record SleepSort(ExecutorService executor) {
     }
 
     private SleepSort() {
-        // this(Executors.newFixedThreadPool(5));
+        // this(Executors.newFixedThreadPool(10));
         // this(Executors.newThreadPerTaskExecutor(Thread::new));
         this(Executors.newVirtualThreadPerTaskExecutor());
     }
