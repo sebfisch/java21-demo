@@ -1,6 +1,7 @@
 package sebfisch;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
@@ -14,11 +15,13 @@ public class FileSearch {
 
     public static void main(final String[] args) {
         final Path folderPath = Path.of(args[0]);
-        final String regExp = args[1];
-        final Predicate<String> isMatching = Pattern.compile(regExp).asPredicate();
+        final String extension = args[1];
+        final Predicate<String> isMatching = Pattern.compile(args[2]).asPredicate();
 
-        try (Stream<Path> files = Files.walk(folderPath).filter(Files::isRegularFile)) {
+        try (Stream<Path> files = Files.walk(folderPath)) {
             files
+                    .filter(Files::isRegularFile)
+                    .filter(filePath -> filePath.toString().endsWith(extension))
                     .map(Path::toAbsolutePath)
                     .map(filePath -> FileMatches.from(filePath, isMatching))
                     .peek(partial -> partial.ifFailure(System.err::println))
@@ -28,7 +31,7 @@ public class FileSearch {
                     .map(FileMatches::matchingLines)
                     .mapMulti(List::forEach)
                     .forEach(System.out::println);
-        } catch (IOException e) {
+        } catch (IOException | UncheckedIOException e) {
             System.err.println(e);
         }
     }
