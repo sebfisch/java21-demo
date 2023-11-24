@@ -12,11 +12,15 @@ public class FileSearch {
 
     public static void main(final String[] args) {
         final Path folderPath = Path.of(args[0]);
-        final String regExp = args[1];
-        final Predicate<String> isMatching = Pattern.compile(regExp).asPredicate();
+        final String extension = args[1];
+        final Predicate<String> isMatching = Pattern.compile(args[2]).asPredicate();
 
-        try (Stream<Path> files = Files.walk(folderPath).filter(Files::isRegularFile)) {
-            final Iterable<Path> iterableFiles = () -> files.iterator();
+        try (Stream<Path> files = Files.walk(folderPath)) {
+            final Iterable<Path> iterableFiles = () -> files
+                    .filter(Files::isRegularFile)
+                    .filter(filePath -> filePath.toString().endsWith(extension))
+                    .iterator();
+
             for (final Path file : iterableFiles) {
                 final Path filePath = file.toAbsolutePath();
 

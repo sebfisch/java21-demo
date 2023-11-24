@@ -1,6 +1,6 @@
 #!/bin/bash
 
-java \
+/opt/java/openjdk/bin/java \
   -cp target/classes \
   -XX:StartFlightRecording:filename=$1.jfr \
-  $1
+  $*
