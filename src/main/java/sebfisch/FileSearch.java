@@ -20,9 +20,9 @@ public class FileSearch {
 
         try (Stream<Path> files = Files.walk(folderPath)) {
             files
+                    .map(Path::toAbsolutePath)
                     .filter(Files::isRegularFile)
                     .filter(filePath -> filePath.toString().endsWith(extension))
-                    .map(Path::toAbsolutePath)
                     .map(filePath -> FileMatches.from(filePath, isMatching))
                     .peek(partial -> partial.ifFailure(System.err::println))
                     .mapMulti(Partial<FileMatches, IOException>::ifSuccess)
