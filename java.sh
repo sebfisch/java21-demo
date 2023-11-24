@@ -1,3 +1,3 @@
 #!/bin/bash
 
-java -cp target/classes $*
+/opt/java/openjdk/bin/java -cp target/classes $*
