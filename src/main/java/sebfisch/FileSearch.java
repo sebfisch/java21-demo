@@ -17,13 +17,18 @@ public class FileSearch {
         final Predicate<String> isMatching = Pattern.compile(args[2]).asPredicate();
 
         try (Stream<Path> files = Files.walk(folderPath)) {
-            final Iterable<Path> iterableFiles = () -> files
-                    .filter(Files::isRegularFile)
-                    .filter(filePath -> filePath.toString().endsWith(extension))
-                    .iterator();
+            final Iterable<Path> iterableFiles = () -> files.iterator();
 
             for (final Path file : iterableFiles) {
                 final Path filePath = file.toAbsolutePath();
+
+                if (!Files.isRegularFile(filePath)) {
+                    continue;
+                }
+
+                if (!filePath.toString().endsWith(extension)) {
+                    continue;
+                }
 
                 final FileMatches matches;
                 try {
