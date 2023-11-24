@@ -1,6 +1,7 @@
 package sebfisch;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
@@ -42,7 +43,7 @@ public class FileSearch {
                     System.out.println(line);
                 }
             }
-        } catch (IOException e) {
+        } catch (IOException | UncheckedIOException e) {
             System.err.println(e);
         }
     }
