@@ -56,7 +56,7 @@ public record Clients(
                 ; BufferedReader reader
                 = new BufferedReader(new InputStreamReader(socket.getInputStream()))) {
             final SplittableRandom rnd = random.split();
-            TimeUnit.SECONDS.sleep(rnd.nextInt(0, 1));
+            TimeUnit.MILLISECONDS.sleep(rnd.nextInt(0, 1000));
             for (int messageNum = 0; messageNum < messageCount; messageNum++) {
                 final String message = "%s - Client %d: Message %d".formatted(
                         LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss.SSS")),
@@ -65,7 +65,7 @@ public record Clients(
                 );
                 writer.println(message);
                 assert message.equals(reader.readLine());
-                TimeUnit.SECONDS.sleep(rnd.nextInt(0, 2));
+                TimeUnit.MILLISECONDS.sleep(rnd.nextInt(0, 2000));
             }
         }
     }
