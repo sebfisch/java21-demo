@@ -1,21 +1,39 @@
 package sebfisch.echo;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.SequencedCollection;
-import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
-public record MostRecentlyAdded<T>(int capacity, SequencedCollection<T> elements) {
+public record MostRecentlyAdded<T>(int capacity, SequencedCollection<T> elements, Lock lock) {
 
     public MostRecentlyAdded(int capacity) {
-        this(capacity, new ConcurrentLinkedDeque<>());
+        this(capacity, new LinkedHashSet<>(), new ReentrantLock());
     }
 
     public SequencedCollection<T> add(T elem) {
-        elements.addLast(elem);
-        SequencedCollection<T> removed = new LinkedList<>();
-        while (capacity < elements.size()) {
-            removed.addLast(elements.removeFirst());
+        lock.lock();
+        try {
+            elements.addLast(elem);
+            SequencedCollection<T> removed = new LinkedList<>();
+            while (capacity < elements.size()) {
+                removed.addLast(elements.removeFirst());
+            }
+            return removed;
+        } finally {
+            lock.unlock();
         }
-        return removed;
+    }
+
+    public Collection<T> copyElements() {
+        lock.lock();
+        try {
+            return new ArrayList<>(elements);
+        } finally {
+            lock.unlock();
+        }
     }
 }

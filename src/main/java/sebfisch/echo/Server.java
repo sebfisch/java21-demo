@@ -40,7 +40,10 @@ public record Server(
                     = new BufferedReader(new InputStreamReader(System.in))//
                     ; PrintWriter writer
                     = new PrintWriter(System.out, true)) {
-                reader.lines().forEach(unused -> messages.elements().forEach(writer::println));
+                reader.lines().forEach(unused -> {
+                    System.out.println("most recent messages:");
+                    messages.copyElements().forEach(writer::println);
+                });
             }
             return null;
         });
