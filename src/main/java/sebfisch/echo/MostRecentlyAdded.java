@@ -28,7 +28,7 @@ public record MostRecentlyAdded<T>(int capacity, SequencedCollection<T> elements
         }
     }
 
-    public Collection<T> copyElements() {
+    public Collection<T> copy() {
         lock.lock();
         try {
             return new ArrayList<>(elements);
