@@ -57,8 +57,7 @@ class ExprTests {
 
     @Test
     void testParsingFormattedExpr() {
-        final Expr expr = EXPR
-        ."(1 + 2)";
+        final Expr expr = EXPR."(1 + \{2})";
         assertEquals(expr, new Parser(expr.format()).parseExpression());
     }
 

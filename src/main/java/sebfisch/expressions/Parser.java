@@ -15,8 +15,7 @@ public record Parser(Scanner input) {
         if (!invalidValues.isEmpty()) {
             throw new IllegalArgumentException(STR."invalid values: \{invalidValues}");
         }
-        final String input = StringTemplate.interpolate(template.fragments(), template.values());
-        return new Parser(input).parseExpression();
+        return new Parser(template.interpolate()).parseExpression();
     };
 
     public Parser(String input) {
