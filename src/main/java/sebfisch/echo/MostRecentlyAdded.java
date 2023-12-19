@@ -3,9 +3,9 @@ package sebfisch.echo;
 import java.util.SequencedCollection;
 import java.util.concurrent.ConcurrentLinkedDeque;
 
-public record RecentlyAccessed<T>(int capacity, SequencedCollection<T> elements) {
+public record MostRecentlyAdded<T>(int capacity, SequencedCollection<T> elements) {
 
-    public RecentlyAccessed(int capacity) {
+    public MostRecentlyAdded(int capacity) {
         this(capacity, new ConcurrentLinkedDeque<>());
     }
 

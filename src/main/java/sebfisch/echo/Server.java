@@ -12,7 +12,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public record Server(
-        ServerSocket socket, ExecutorService executor, RecentlyAccessed<String> recentMessages)
+        ServerSocket socket, ExecutorService executor, MostRecentlyAdded<String> messages)
         implements Closeable {
 
     public static void main(String[] args) {
@@ -31,7 +31,7 @@ public record Server(
     private Server() throws IOException {
         this(new ServerSocket(0),
                 Executors.newVirtualThreadPerTaskExecutor(),
-                new RecentlyAccessed<>(20)
+                new MostRecentlyAdded<>(20)
         );
     }
 
@@ -41,10 +41,7 @@ public record Server(
                     = new BufferedReader(new InputStreamReader(System.in))//
                     ; PrintWriter writer
                     = new PrintWriter(System.out, true)) {
-                reader.lines().forEach(unused -> {
-                    System.out.println("recent messages:");
-                    recentMessages.elements().forEach(writer::println);
-                });
+                reader.lines().forEach(unused -> messages.elements().forEach(writer::println));
             }
             return null;
         });
@@ -63,7 +60,7 @@ public record Server(
                     ; PrintWriter writer
                     = new PrintWriter(client.getOutputStream(), true)) {
                 reader.lines().forEach(msg -> {
-                    recentMessages.add(msg);
+                    messages.add(msg);
                     writer.println(msg);
                 });
             } finally {
