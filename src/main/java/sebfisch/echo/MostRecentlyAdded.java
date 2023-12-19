@@ -1,12 +1,11 @@
 package sebfisch.echo;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.SequencedCollection;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.Consumer;
 
 public record MostRecentlyAdded<T>(int capacity, SequencedCollection<T> elements, Lock lock) {
 
@@ -28,10 +27,10 @@ public record MostRecentlyAdded<T>(int capacity, SequencedCollection<T> elements
         }
     }
 
-    public Collection<T> copy() {
+    public void forEach(Consumer<T> action) {
         lock.lock();
         try {
-            return new ArrayList<>(elements);
+            elements.forEach(action);
         } finally {
             lock.unlock();
         }
