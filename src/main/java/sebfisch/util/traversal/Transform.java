@@ -8,12 +8,12 @@ public interface Transform<C> extends UnaryOperator<C> {
 
     static <P extends Has<P, C>, C> P children(P parent, Transform<C> tfm) {
         return switch (parent) {
-            case Has.One<P, C> p ->
-                p.withChild(tfm.apply(p.child()));
-            case Has.Two<P, C> p ->
-                p.withChildren(tfm.apply(p.left()), tfm.apply(p.right()));
-            case Has.Any<P, C> p ->
-                p.withChildren(p.children().stream().map(tfm).toList());
+            case Has.One/*<P,C>*/ p -> // parameterized type pattern handled incorrectly by Eclipse
+                (P) p.withChild(tfm.apply((C) p.child())); // type cast required as a consequence
+            case Has.Two/*<P,C>*/ p ->
+                (P) p.withChildren(tfm.apply((C) p.left()), tfm.apply((C) p.right()));
+            case Has.Any/*<P,C>*/ p ->
+                (P) p.withChildren(p.children().stream().map(tfm).toList());
             default ->
                 parent;
         };

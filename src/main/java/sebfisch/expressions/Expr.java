@@ -110,6 +110,8 @@ public sealed interface Expr extends Rec<Expr> {
                 Math.multiplyExact(l.value(), r.value());
             case Div(var l, var r) ->
                 Math.divideExact(l.value(), r.value());
+            default ->
+                throw new IllegalStateException("Eclipse does not detect exhaustiveness.");
         };
     }
 
@@ -129,6 +131,8 @@ public sealed interface Expr extends Rec<Expr> {
                 "-%s".formatted(e.format());
             case Bin bin ->
                 "(%s %s %s)".formatted(bin.left().format(), bin.op(), bin.right().format());
+            default ->
+                throw new IllegalStateException("Eclipse does not detect exhaustiveness.");
         };
     }
 
