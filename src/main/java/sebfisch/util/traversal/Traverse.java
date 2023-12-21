@@ -6,13 +6,13 @@ public final class Traverse {
 
     public static <P extends Has<P, C>, C> void children(P parent, Consumer<C> action) {
         switch (parent) {
-            case Has.One<P, C> p ->
-                action.accept(p.child());
-            case Has.Two<P, C> p -> {
-                action.accept(p.left());
-                action.accept(p.right());
+            case Has.One/*<P,C>*/ p -> // parameterized type pattern handled incorrectly by Eclipse
+                action.accept((C) p.child()); // type cast required as a consequence
+            case Has.Two/*<P,C>*/ p -> {
+                action.accept((C) p.left());
+                action.accept((C) p.right());
             }
-            case Has.Any<P, C> p ->
+            case Has.Any/*<P,C>*/ p ->
                 p.children().forEach(action);
             default -> {
             }
