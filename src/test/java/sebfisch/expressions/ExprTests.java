@@ -47,9 +47,9 @@ class ExprTests {
     @Test
     public void testPartialDivisionByZero() {
         final Expr expr = new Expr.Div(Expr.Small.ONE, Expr.Small.ZERO);
-        assertTrue(
-                expr.partialValue() instanceof Partial.Failure(var e)
-                && e instanceof ArithmeticException
+        assertTrue( // record patterns not supported here in Eclipse
+                expr.partialValue() instanceof Partial.Failure f
+                && f.error() instanceof ArithmeticException
         );
     }
 
@@ -57,8 +57,8 @@ class ExprTests {
     public void testPartialIntOverflow() {
         final Expr expr = new Expr.Add(new Expr.Num(Integer.MAX_VALUE), Expr.Small.ONE);
         assertTrue(
-                expr.partialValue() instanceof Partial.Failure(var e)
-                && e instanceof ArithmeticException
+                expr.partialValue() instanceof Partial.Failure f
+                && f.error() instanceof ArithmeticException
         );
     }
 
@@ -69,8 +69,8 @@ class ExprTests {
                 new Expr.Neg(Expr.Small.ONE)
         );
         assertTrue(
-                expr.partialValue() instanceof Partial.Failure(var e)
-                && e instanceof ArithmeticException
+                expr.partialValue() instanceof Partial.Failure f
+                && f.error() instanceof ArithmeticException
         );
     }
 

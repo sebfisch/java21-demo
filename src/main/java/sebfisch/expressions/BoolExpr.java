@@ -36,8 +36,8 @@ public sealed interface BoolExpr extends Rec<BoolExpr> {
         }
     }
 
-    default boolean hasDoubleNot() {
-        return Query.all(this).filter(e -> e instanceof Not(Not(var unused))).count() > 0;
+    default boolean hasDoubleNot() { // record patterns not supported here in Eclipse
+        return Query.all(this).filter(e -> e instanceof Not n && n instanceof Not).count() > 0;
     }
 
     default boolean hasOr() {
