@@ -47,19 +47,13 @@ class ExprTests {
     @Test
     public void testPartialDivisionByZero() {
         final Expr expr = new Expr.Div(Expr.Small.ONE, Expr.Small.ZERO);
-        assertTrue(
-                expr.partialValue() instanceof Partial.Failure(var e)
-                && e instanceof ArithmeticException
-        );
+        assertTrue(expr.partialValue() instanceof Partial.Failure(ArithmeticException e));
     }
 
     @Test
     public void testPartialIntOverflow() {
         final Expr expr = new Expr.Add(new Expr.Num(Integer.MAX_VALUE), Expr.Small.ONE);
-        assertTrue(
-                expr.partialValue() instanceof Partial.Failure(var e)
-                && e instanceof ArithmeticException
-        );
+        assertTrue(expr.partialValue() instanceof Partial.Failure(ArithmeticException e));
     }
 
     @Test
@@ -68,10 +62,7 @@ class ExprTests {
                 new Expr.Num(Integer.MIN_VALUE),
                 new Expr.Neg(Expr.Small.ONE)
         );
-        assertTrue(
-                expr.partialValue() instanceof Partial.Failure(var e)
-                && e instanceof ArithmeticException
-        );
+        assertTrue(expr.partialValue() instanceof Partial.Failure(ArithmeticException e));
     }
 
     @Test
